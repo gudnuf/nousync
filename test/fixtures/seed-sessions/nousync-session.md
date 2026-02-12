@@ -1,9 +1,9 @@
 ---
 session_id: 0c5c4f5a-a2d0-48fd-bb63-645124c42a7b
 timestamp: '2026-02-12T18:51:01.889Z'
-project: nousphere
+project: nousync
 task: >-
-  Create initial git commit for nousphere project setup including Nix flake,
+  Create initial git commit for nousync project setup including Nix flake,
   Holesail P2P proof-of-concept, and research documentation
 outcome: success
 tags:
@@ -45,7 +45,7 @@ git_remote: null
 ---
 ## What Was Built
 
-Initial git repository for nousphere, a P2P session sharing system for Claude Code. Committed 11 files including Nix flake development environment with direnv integration, package.json with holesail and express dependencies, Holesail proof-of-concept client/server pair, research documentation, brainstorm notes, and Claude Code plugin settings. Root commit e8a8624 with descriptive message.
+Initial git repository for nousync, a P2P session sharing system for Claude Code. Committed 11 files including Nix flake development environment with direnv integration, package.json with holesail and express dependencies, Holesail proof-of-concept client/server pair, research documentation, brainstorm notes, and Claude Code plugin settings. Root commit e8a8624 with descriptive message.
 
 ## What Failed First
 
@@ -67,7 +67,7 @@ git commit -m "$(cat <<'EOF'
 Initial project setup: P2P session sharing for Claude Code
 
 Nix flake dev environment, Holesail proof-of-concept, and research
-findings for the nousphere P2P session sharing architecture.
+findings for the nousync P2P session sharing architecture.
 EOF
 )"
 ```

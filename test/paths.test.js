@@ -4,30 +4,30 @@ import { homedir } from 'node:os';
 import { join } from 'node:path';
 
 describe('paths', () => {
-  it('defaults to ~/.nousphere', async () => {
+  it('defaults to ~/.nousync', async () => {
     // Clear override to test default
-    const saved = process.env.NOUSPHERE_HOME;
-    delete process.env.NOUSPHERE_HOME;
+    const saved = process.env.NOUSYNC_HOME;
+    delete process.env.NOUSYNC_HOME;
 
     // Re-import to get fresh module (dynamic import always re-evaluates)
-    const { nousphereHome, sessionsDir, indexesDir, claudeProjectsDir } = await import('../packages/core/paths.js');
+    const { nousyncHome, sessionsDir, indexesDir, claudeProjectsDir } = await import('../packages/core/paths.js');
 
-    assert.equal(nousphereHome(), join(homedir(), '.nousphere'));
-    assert.equal(sessionsDir(), join(homedir(), '.nousphere', 'sessions'));
-    assert.equal(indexesDir(), join(homedir(), '.nousphere', 'indexes'));
+    assert.equal(nousyncHome(), join(homedir(), '.nousync'));
+    assert.equal(sessionsDir(), join(homedir(), '.nousync', 'sessions'));
+    assert.equal(indexesDir(), join(homedir(), '.nousync', 'indexes'));
     assert.equal(claudeProjectsDir(), join(homedir(), '.claude', 'projects'));
 
-    if (saved) process.env.NOUSPHERE_HOME = saved;
+    if (saved) process.env.NOUSYNC_HOME = saved;
   });
 
-  it('respects NOUSPHERE_HOME override', async () => {
-    process.env.NOUSPHERE_HOME = '/tmp/test-nousphere';
-    const { nousphereHome, sessionsDir, indexesDir } = await import('../packages/core/paths.js');
+  it('respects NOUSYNC_HOME override', async () => {
+    process.env.NOUSYNC_HOME = '/tmp/test-nousync';
+    const { nousyncHome, sessionsDir, indexesDir } = await import('../packages/core/paths.js');
 
-    assert.equal(nousphereHome(), '/tmp/test-nousphere');
-    assert.equal(sessionsDir(), '/tmp/test-nousphere/sessions');
-    assert.equal(indexesDir(), '/tmp/test-nousphere/indexes');
+    assert.equal(nousyncHome(), '/tmp/test-nousync');
+    assert.equal(sessionsDir(), '/tmp/test-nousync/sessions');
+    assert.equal(indexesDir(), '/tmp/test-nousync/indexes');
 
-    delete process.env.NOUSPHERE_HOME;
+    delete process.env.NOUSYNC_HOME;
   });
 });

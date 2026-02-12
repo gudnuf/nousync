@@ -3,9 +3,9 @@ import { homedir } from 'node:os';
 import { mkdirSync, readFileSync } from 'node:fs';
 import yaml from 'js-yaml';
 
-const home = () => process.env.NOUSPHERE_HOME || join(homedir(), '.nousphere');
+const home = () => process.env.NOUSYNC_HOME || join(homedir(), '.nousync');
 
-export function nousphereHome() {
+export function nousyncHome() {
   return home();
 }
 

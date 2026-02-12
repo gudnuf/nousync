@@ -1,5 +1,5 @@
 {
-  description = "Nousphere - P2P session sharing for Claude Code";
+  description = "Nousync - P2P session sharing for Claude Code";
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
@@ -18,7 +18,7 @@
         ];
 
         shellHook = ''
-          echo "nousphere dev shell"
+          echo "nousync dev shell"
           echo "node $(node --version) | npm $(npm --version)"
         '';
       };

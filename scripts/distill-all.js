@@ -1,7 +1,7 @@
 #!/usr/bin/env node
-// Usage: node scripts/distill-all.js [--project=nousphere] [--dry-run]
+// Usage: node scripts/distill-all.js [--project=nousync] [--dry-run]
 //
-// Batch distills all transcripts (or filtered by project) and saves to ~/.nousphere/sessions/.
+// Batch distills all transcripts (or filtered by project) and saves to ~/.nousync/sessions/.
 // Skips sessions that already have a distilled .md file.
 
 import { readFileSync, writeFileSync, existsSync, readdirSync } from 'node:fs';

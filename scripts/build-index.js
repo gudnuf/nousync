@@ -4,7 +4,7 @@
 // Reads distilled session logs (*.md) from a directory,
 // clusters them into expertise domains, and writes expertise_index.yaml.
 //
-// If no dir given, uses ~/.nousphere/sessions/ (where distill-one.js --save writes).
+// If no dir given, uses ~/.nousync/sessions/ (where distill-one.js --save writes).
 // Pass --dry-run to skip the API call and just list what would be indexed.
 
 import { readFileSync, existsSync, readdirSync } from 'node:fs';

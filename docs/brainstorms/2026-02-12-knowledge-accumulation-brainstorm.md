@@ -1,11 +1,11 @@
-# Nousphere: Knowledge Accumulation for Claude Code
+# Nousync: Knowledge Accumulation for Claude Code
 
 **Date:** 2026-02-12
 **Status:** Brainstorm
 
 ## What We're Building
 
-A standalone knowledge accumulation system that automatically captures what was done and why at the end of meaningful Claude Code sessions. Logs are stored globally at `~/.nousphere/`, indexed with YAML frontmatter for later discovery via grep and a generated index.
+A standalone knowledge accumulation system that automatically captures what was done and why at the end of meaningful Claude Code sessions. Logs are stored globally at `~/.nousync/`, indexed with YAML frontmatter for later discovery via grep and a generated index.
 
 This is **not** a replacement for Claude's built-in memory system. It's a parallel, more detailed record — a journal of engineering sessions that compounds over time.
 
@@ -15,7 +15,7 @@ This is **not** a replacement for Claude's built-in memory system. It's a parall
 
 - A **Claude Code skill** handles distillation mid-session. Claude has full session context, can judge significance, write rich summaries, and ask the human one check-in question before saving.
 - A **stop hook** acts as a completion step — it always runs at session end to ensure the record is finalized, even if the skill already captured during the session (e.g., appends final state, marks entry as complete).
-- Knowledge lives at `~/.nousphere/` — hidden, dedicated, global across all projects.
+- Knowledge lives at `~/.nousync/` — hidden, dedicated, global across all projects.
 
 ### Alternatives Considered
 
@@ -28,10 +28,10 @@ This is **not** a replacement for Claude's built-in memory system. It's a parall
 ## Key Decisions
 
 1. **Trigger:** Session end (when session was meaningful — Claude judges significance)
-2. **Storage:** `~/.nousphere/sessions/` for individual logs
+2. **Storage:** `~/.nousync/sessions/` for individual logs
 3. **Autonomy:** Claude drafts autonomously, then asks one open-ended question ("anything to add about what worked or didn't?") before saving
 4. **Granularity:** Meaningful sessions only — skip trivial Q&A or single-line fixes. Heuristic: session involved multi-file changes, debugging, architectural decisions, or new feature work
-5. **Discovery:** Grep frontmatter fields + auto-generated `~/.nousphere/index.md`
+5. **Discovery:** Grep frontmatter fields + auto-generated `~/.nousync/index.md`
 6. **Independence:** Does not interfere with Claude's MEMORY.md or built-in systems
 
 ## Schema
@@ -73,7 +73,7 @@ Reusable patterns, snippets, or architectural decisions worth remembering.
 
 ## Components
 
-### 1. Skill: `/nousphere:capture`
+### 1. Skill: `/nousync:capture`
 
 **Files:**
 - `skills/capture/SKILL.md` — Distillation logic and instructions
@@ -85,16 +85,16 @@ Reusable patterns, snippets, or architectural decisions worth remembering.
 3. Draft body sections (what was built, what failed, what worked, gotchas, patterns)
 4. Ask human: "Anything to add about what worked or what was frustrating?"
 5. Generate slug from task description
-6. Ensure `~/.nousphere/sessions/` exists
+6. Ensure `~/.nousync/sessions/` exists
 7. Write the file (default: save with summary; `--preview` flag shows full entry first)
 8. Confirm: show key_insight + filename
 
-**Dev setup:** Load skill directly from the nousphere repo directory.
+**Dev setup:** Load skill directly from the nousync repo directory.
 **Later:** Installable — users clone repo and symlink or run an install script.
 
 ### 2. Global CLAUDE.md Instruction
 - Added to `~/.claude/CLAUDE.md`
-- Tells Claude: "Before ending any meaningful session, run nousphere capture"
+- Tells Claude: "Before ending any meaningful session, run nousync capture"
 
 ### 3. Stop Hook (Breadcrumb / Completion Step)
 - Claude Code hook on the `stop` event
@@ -105,14 +105,14 @@ Reusable patterns, snippets, or architectural decisions worth remembering.
 
 ### 4. Index Generator
 - Part of the capture skill
-- Regenerates `~/.nousphere/index.md` after each new entry
+- Regenerates `~/.nousync/index.md` after each new entry
 - Groups by project, sorted by date, shows key_insight for each
 
 ## Directory Structure
 
 **Repo (development):**
 ```
-nousphere/
+nousync/
   skills/
     capture/
       SKILL.md        # Distillation logic
@@ -123,7 +123,7 @@ nousphere/
 
 **User's system (runtime output):**
 ```
-~/.nousphere/
+~/.nousync/
   sessions/
     2026-02-12-auth-refactor.md
     2026-02-11-api-rate-limiting.md
@@ -135,7 +135,7 @@ nousphere/
 
 1. **Stop hook mechanics:** Hook always runs as a completion step, not just a fallback. Ensures record is finalized regardless of whether the skill ran mid-session.
 2. **Session ID format:** Timestamp-slug (`2026-02-12-auth-refactor`) — human-readable, naturally sorted, doubles as filename. On collision, append `-2`, `-3`, etc.
-3. **Skill distribution:** Lives in the nousphere repo initially. Later becomes installable to any user's system.
+3. **Skill distribution:** Lives in the nousync repo initially. Later becomes installable to any user's system.
 
 ## Open Questions
 

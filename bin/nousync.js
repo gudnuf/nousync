@@ -2,14 +2,14 @@
 
 const command = process.argv[2];
 
-const HELP = `nousphere - P2P knowledge network for Claude Code agents
+const HELP = `nousync - P2P knowledge network for Claude Code agents
 
 Commands:
-  init     Set up nousphere (first-time or add new sessions)
+  init     Set up nousync (first-time or add new sessions)
   serve    Start sharing your knowledge over P2P
-  ask      Query a running nousphere agent
+  ask      Query a running nousync agent
 
-Run 'nousphere <command> --help' for details on each command.`;
+Run 'nousync <command> --help' for details on each command.`;
 
 if (!command || command === '--help' || command === '-h') {
   console.log(HELP);

@@ -1,24 +1,24 @@
-# Nousphere
+# Nousync
 
 > P2P knowledge network for Claude Code agents. Distills your coding sessions into searchable knowledge and shares it over a peer-to-peer network.
 
 ## What it does
 
-Nousphere reads your Claude Code session transcripts (~/.claude/projects/), distills them into structured knowledge using the Anthropic API, and serves that knowledge over Holesail (a P2P tunnel). Other agents can then query your expertise.
+Nousync reads your Claude Code session transcripts (~/.claude/projects/), distills them into structured knowledge using the Anthropic API, and serves that knowledge over Holesail (a P2P tunnel). Other agents can then query your expertise.
 
 ## Setup
 
 Prerequisites: Node.js 22+, an Anthropic API key.
 
 ```sh
-git clone https://github.com/gudnuf/nousphere.git
-cd nousphere
+git clone https://github.com/gudnuf/nousync.git
+cd nousync
 npm install
-npx nousphere init
+npx nousync init
 ```
 
 The init command will:
-1. Prompt for your Anthropic API key (saved to ~/.nousphere/config.yaml)
+1. Prompt for your Anthropic API key (saved to ~/.nousync/config.yaml)
 2. Scan ~/.claude/projects/ for session transcripts (last 30 days by default)
 3. Distill each session into structured knowledge (~30s per session)
 4. Build an expertise index
@@ -27,35 +27,35 @@ If ANTHROPIC_API_KEY is already set in the environment, init will use it automat
 
 Init options:
 ```sh
-npx nousphere init                        # last 30 days (default)
-npx nousphere init --project=myapp        # only sessions for "myapp"
-npx nousphere init --since=7d             # last 7 days
-npx nousphere init --since=90d            # last 90 days
-npx nousphere init --all                  # all sessions (no time filter)
+npx nousync init                        # last 30 days (default)
+npx nousync init --project=myapp        # only sessions for "myapp"
+npx nousync init --since=7d             # last 7 days
+npx nousync init --since=90d            # last 90 days
+npx nousync init --all                  # all sessions (no time filter)
 ```
 
 ## Serving
 
 ```sh
-npx nousphere serve
+npx nousync serve
 ```
 
 Prints a `hs://` URL. Share this URL with other agents or users.
 
 ## Querying
 
-To query a running nousphere agent:
+To query a running nousync agent:
 
 ```sh
-npx nousphere ask <hs://url> "your question"
-npx nousphere ask <hs://url> --profile
-npx nousphere ask <hs://url> --status
+npx nousync ask <hs://url> "your question"
+npx nousync ask <hs://url> --profile
+npx nousync ask <hs://url> --status
 ```
 
 ## Querying from code
 
 ```js
-import { AgentClient } from 'nousphere/packages/client/connector.js';
+import { AgentClient } from 'nousync/packages/client/connector.js';
 
 const client = new AgentClient('hs://...', { timeout: 120_000 });
 await client.connect();
@@ -81,10 +81,10 @@ GET /status — Health check
 
 ## Data directory
 
-All data lives in ~/.nousphere/ (override with NOUSPHERE_HOME env var):
+All data lives in ~/.nousync/ (override with NOUSYNC_HOME env var):
 
 ```
-~/.nousphere/
+~/.nousync/
   config.yaml              # anthropic_api_key
   sessions/                # distilled session markdown files
   indexes/
@@ -93,4 +93,4 @@ All data lives in ~/.nousphere/ (override with NOUSPHERE_HOME env var):
 
 ## Adding new sessions
 
-Run `npx nousphere init` again. It skips already-distilled sessions and only processes new ones.
+Run `npx nousync init` again. It skips already-distilled sessions and only processes new ones.

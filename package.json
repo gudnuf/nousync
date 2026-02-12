@@ -1,10 +1,10 @@
 {
-  "name": "nousphere",
+  "name": "nousync",
   "version": "1.0.0",
   "description": "P2P knowledge network for Claude Code agents",
   "type": "module",
   "bin": {
-    "nousphere": "bin/nousphere.js"
+    "nousync": "bin/nousync.js"
   },
   "scripts": {
     "start": "node bin/serve.js",

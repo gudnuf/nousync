@@ -1,4 +1,4 @@
-# Nousphere Research Findings
+# Nousync Research Findings
 
 Sprint 0 research to de-risk the two core unknowns: P2P tunneling via Holesail and Claude Code session data access.
 
@@ -155,7 +155,7 @@ await hs.resume()  // Resumes DHT
 
 Path encoding: absolute path with `/` replaced by `-`. Example:
 ```
-/Users/claude/nousphere -> -Users-claude-nousphere
+/Users/claude/nousync -> -Users-claude-nousync
 ```
 
 Subagent transcripts:
@@ -221,7 +221,7 @@ claude --continue                               # Continue last session
 
 ### Available Hook Events
 
-| Event | When | Can Block? | Key for Nousphere |
+| Event | When | Can Block? | Key for Nousync |
 |-------|------|------------|-------------------|
 | `SessionStart` | Session begins/resumes | No | Load context |
 | `SessionEnd` | Session terminates | No | **Trigger share** |
@@ -309,7 +309,7 @@ hooks:
 
 ---
 
-## 4. Architecture Implications for Nousphere
+## 4. Architecture Implications for Nousync
 
 ### Recommended Integration Path
 
@@ -326,7 +326,7 @@ SessionEnd hook
 
 If we want Claude to generate a summary before sharing:
 
-1. CLAUDE.md instruction: "Before ending, write session summary to `.nousphere/summary.md`"
+1. CLAUDE.md instruction: "Before ending, write session summary to `.nousync/summary.md`"
 2. Stop hook checks if summary exists, blocks if not
 3. SessionEnd hook packages summary + transcript and shares via Holesail
 
@@ -335,7 +335,7 @@ If we want Claude to generate a summary before sharing:
 1. **Use SessionEnd for sharing** - Clean, non-blocking, gets transcript_path directly
 2. **Holesail secure mode** - Always use `secure: true` for encrypted tunnels
 3. **Read JSONL directly** - No need for fallback; transcripts are always available
-4. **Connection info file** - Write `hs://` URL to `~/.nousphere/connections/<session-id>.json`
+4. **Connection info file** - Write `hs://` URL to `~/.nousync/connections/<session-id>.json`
 5. **Persistent server** - Consider a long-running daemon vs. per-session server
 
 ### Latency Budget

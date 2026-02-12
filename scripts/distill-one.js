@@ -5,7 +5,7 @@
 //   Step 1: Parse transcript → show condensed messages + metadata
 //   Step 2: Press enter → distill via Claude API → show session log
 //
-// --save: Write the distilled session log to ~/.nousphere/sessions/<session_id>.md
+// --save: Write the distilled session log to ~/.nousync/sessions/<session_id>.md
 // If no path given, lists available transcripts from all Claude Code projects.
 
 import { createInterface } from 'node:readline';

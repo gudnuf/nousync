@@ -22,11 +22,11 @@ describe('retrieveRelevantSessions', () => {
     assert.ok(result.query.keywords.includes('nix'), 'should include "nix" keyword');
     assert.ok(result.query.keywords.includes('flake'), 'should include "flake" keyword');
 
-    // The nousphere session has nix-flake-direnv tag
+    // The nousync session has nix-flake-direnv tag
     const sessionIds = result.sessions.map(s => s.frontmatter.session_id);
     assert.ok(
       sessionIds.includes('0c5c4f5a-a2d0-48fd-bb63-645124c42a7b'),
-      'should return the nousphere session (has nix-flake-direnv tag)',
+      'should return the nousync session (has nix-flake-direnv tag)',
     );
 
     // Each session should have score and matchedTags

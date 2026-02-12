@@ -8,22 +8,22 @@ import yaml from 'js-yaml';
 import { distill } from '../packages/core/distiller.js';
 import { buildIndex } from '../packages/core/index-builder.js';
 import {
-  nousphereHome, sessionsDir, indexesDir, transcriptsGlob,
+  nousyncHome, sessionsDir, indexesDir, transcriptsGlob,
   configPath, loadConfig, ensureApiKey,
 } from '../packages/core/paths.js';
 
 const args = process.argv.slice(2);
 
 if (args.includes('--help') || args.includes('-h')) {
-  console.log(`nousphere init - Set up nousphere
+  console.log(`nousync init - Set up nousync
 
 Usage:
-  nousphere init                        # 20 most recent sessions
-  nousphere init --project=myapp        # only sessions for "myapp"
-  nousphere init --since=7d             # last 7 days
-  nousphere init --since=90d            # last 90 days
-  nousphere init --last=20              # 20 most recent sessions
-  nousphere init --all                  # everything (can be a lot)
+  nousync init                        # 20 most recent sessions
+  nousync init --project=myapp        # only sessions for "myapp"
+  nousync init --since=7d             # last 7 days
+  nousync init --since=90d            # last 90 days
+  nousync init --last=20              # 20 most recent sessions
+  nousync init --all                  # everything (can be a lot)
 
 Options:
   --project=<name>   Only process sessions matching this project name
@@ -65,9 +65,9 @@ function projectLabel(filePath) {
 }
 
 async function main() {
-  console.log('nousphere init');
-  console.log('==============\n');
-  console.log(`Data directory: ${nousphereHome()}`);
+  console.log('nousync init');
+  console.log('============\n');
+  console.log(`Data directory: ${nousyncHome()}`);
 
   // Parse flags
   const projectFlag = args.find(a => a.startsWith('--project='));
@@ -91,8 +91,8 @@ async function main() {
     const key = process.env.ANTHROPIC_API_KEY;
     console.log(`  Found: ${key.slice(0, 12)}...${key.slice(-4)}`);
   } else {
-    console.log('  Nousphere uses the Anthropic API to distill your sessions.');
-    console.log('  Your key will be saved to ~/.nousphere/config.yaml\n');
+    console.log('  Nousync uses the Anthropic API to distill your sessions.');
+    console.log('  Your key will be saved to ~/.nousync/config.yaml\n');
 
     const key = await prompt('  Anthropic API key: ');
     if (!key) {
@@ -100,7 +100,7 @@ async function main() {
       process.exit(1);
     }
 
-    mkdirSync(nousphereHome(), { recursive: true });
+    mkdirSync(nousyncHome(), { recursive: true });
     const config = loadConfig();
     config.anthropic_api_key = key;
     writeFileSync(configPath(), yaml.dump(config));
@@ -236,7 +236,7 @@ async function main() {
   // --- Done ---
   console.log('\n==============');
   console.log('Ready! Start sharing:\n');
-  console.log('  npx nousphere serve\n');
+  console.log('  npx nousync serve\n');
 
   rl.close();
 }

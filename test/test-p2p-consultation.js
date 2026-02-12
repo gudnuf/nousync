@@ -54,8 +54,8 @@ describe('P2P consultation integration test', { timeout: 30_000 }, () => {
     // 1. Create agent server with mock client pointing at seed sessions
     const mockClient = createMockClient();
     app = createAgentServer({
-      agentId: 'nousphere-agent-1',
-      displayName: 'Nousphere Test Agent',
+      agentId: 'nousync-agent-1',
+      displayName: 'Nousync Test Agent',
       sessionsDir: SEED_DIR,
       indexPath: INDEX_PATH,
       client: mockClient,
@@ -99,8 +99,8 @@ describe('P2P consultation integration test', { timeout: 30_000 }, () => {
     console.log('Getting profile...');
     const profile = await client.getProfile();
 
-    assert.equal(profile.agent_id, 'nousphere-agent-1');
-    assert.equal(profile.display_name, 'Nousphere Test Agent');
+    assert.equal(profile.agent_id, 'nousync-agent-1');
+    assert.equal(profile.display_name, 'Nousync Test Agent');
     assert.ok(Array.isArray(profile.domains));
     assert.ok(profile.domains.length > 0, 'should have domains from index');
     assert.equal(profile.session_count, 3);

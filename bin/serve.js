@@ -9,7 +9,7 @@ import { sessionsDir, indexesDir, ensureApiKey } from '../packages/core/paths.js
 ensureApiKey();
 
 if (!process.env.ANTHROPIC_API_KEY) {
-  console.error('Error: Run "nousphere init" first, or set ANTHROPIC_API_KEY');
+  console.error('Error: Run "nousync init" first, or set ANTHROPIC_API_KEY');
   process.exit(1);
 }
 
@@ -27,7 +27,7 @@ if (!existsSync(indexPath)) {
 
 const app = createAgentServer({
   agentId: 'local',
-  displayName: 'Nousphere Local Agent',
+  displayName: 'Nousync Local Agent',
   sessionsDir: sessions,
   indexPath,
 });
