@@ -1009,17 +1009,61 @@
 </section>
 
 <!-- ══════════════════════════════════ -->
-<!-- SLIDE 10: Vision -->
+<!-- SLIDE 10: Routstr — Drop the API Key -->
+<!-- ══════════════════════════════════ -->
+<section>
+  <div class="section-label">What's Next</div>
+  <h2>Drop the API key &mdash; <span class="gradient-warm">pay with sats</span></h2>
+  <p style="max-width:32em;">
+    Replace the Anthropic SDK with <span class="highlight-warm">Routstr</span> &mdash; an OpenAI-compatible inference proxy that accepts Cashu ecash per request. One unified wallet powers everything.
+  </p>
+  <div class="two-col" style="margin-top:0.6em; gap:1.5em;">
+    <div>
+      <h3 style="font-family:var(--mono); font-size:0.5em; color:var(--accent-rose); margin-bottom:0.4em;">Today</h3>
+      <ul style="font-size:0.92em;">
+        <li><code>ANTHROPIC_API_KEY</code> required &mdash; centralized, KYC&rsquo;d</li>
+        <li>Agents earn sats but can&rsquo;t spend them on inference</li>
+        <li>Wallet only used for inter-agent payments</li>
+      </ul>
+    </div>
+    <div>
+      <h3 style="font-family:var(--mono); font-size:0.5em; color:var(--accent-teal); margin-bottom:0.4em;">After Routstr</h3>
+      <ul style="font-size:0.92em;">
+        <li class="fragment fade-up"><span class="highlight">No accounts, no API keys, no KYC</span> &mdash; just a wallet</li>
+        <li class="fragment fade-up"><span class="highlight-warm">Circular economy</span> &mdash; earn sats answering, spend sats on inference</li>
+        <li class="fragment fade-up"><span class="highlight-rose">328+ models</span> from all providers via OpenRouter</li>
+        <li class="fragment fade-up">Raw <code>fetch</code> + <code>X-Cashu</code> header &mdash; zero new dependencies</li>
+      </ul>
+    </div>
+  </div>
+  <div class="terminal" style="max-width:580px; margin-top:0.6em;">
+    <div class="terminal-header">
+      <div class="terminal-dot"></div>
+      <div class="terminal-dot"></div>
+      <div class="terminal-dot"></div>
+    </div>
+    <div class="terminal-body">
+<span class="t-output">  wallet.send(mint, 50 sat)</span><span class="t-output">  &rarr;  Cashu token</span>
+<span class="t-accent">  POST api.routstr.com/v1/chat/completions</span>
+<span class="t-output">  X-Cashu: </span><span class="t-warm">cashuBo2F...</span>
+<span class="t-success">  &larr; response + X-Cashu: change</span>
+<span class="t-output">  wallet.receive(change)</span><span class="t-output">  &rarr;  unspent sats reclaimed</span>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════ -->
+<!-- SLIDE 11: Vision -->
 <!-- ══════════════════════════════════ -->
 <section class="centered">
-  <div class="section-label">What's Next</div>
+  <div class="section-label">Beyond</div>
   <h2 style="margin-bottom:0.8em;">The Vision</h2>
-  <ul style="text-align:left; max-width:18em; font-size:0.9em;">
-    <li class="fragment fade-up">Agent-to-agent <span class="highlight">knowledge marketplace</span></li>
+  <ul style="text-align:left; max-width:20em; font-size:0.9em;">
     <li class="fragment fade-up">Automatic session sharing via <span class="highlight-warm">Claude Code hooks</span></li>
     <li class="fragment fade-up">Reputation and trust scoring between nodes</li>
     <li class="fragment fade-up">Federated directories &mdash; no single point of failure</li>
     <li class="fragment fade-up">Domain-specific knowledge networks</li>
+    <li class="fragment fade-up"><span class="highlight">Fully permissionless</span> &mdash; Tor support, multi-mint, self-hosted Routstr nodes</li>
   </ul>
   <p class="fragment fade-up" style="margin-top:1.5em; font-family:var(--serif); font-size:1em; color:var(--text-primary);">
     <em class="gradient-brand" style="font-size:1.3em;">When one agent learns, every agent knows.</em>
