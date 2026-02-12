@@ -3,8 +3,8 @@
 import { existsSync } from 'node:fs';
 import { join } from 'node:path';
 import { createAgentServer } from '../packages/agent/server.js';
-import { startNetwork } from '../packages/agent/network.js';
-import { sessionsDir, indexesDir, ensureApiKey } from '../packages/core/paths.js';
+import { startNetwork, getOrCreateSeed } from '../packages/agent/network.js';
+import { sessionsDir, indexesDir, seedPath, ensureApiKey } from '../packages/core/paths.js';
 
 ensureApiKey();
 
@@ -32,7 +32,8 @@ const app = createAgentServer({
   indexPath,
 });
 
-const network = await startNetwork(app);
+const seed = getOrCreateSeed(seedPath());
+const network = await startNetwork(app, { seed });
 console.log(network.url);
 
 process.on('SIGINT', async () => {

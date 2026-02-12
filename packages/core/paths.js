@@ -29,6 +29,10 @@ export function claudeProjectsDir() {
   return join(homedir(), '.claude', 'projects');
 }
 
+export function seedPath() {
+  return join(home(), 'server.seed');
+}
+
 export function configPath() {
   return join(home(), 'config.yaml');
 }
