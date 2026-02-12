@@ -1,6 +1,7 @@
 import { join } from 'node:path';
 import { homedir } from 'node:os';
-import { mkdirSync } from 'node:fs';
+import { mkdirSync, readFileSync } from 'node:fs';
+import yaml from 'js-yaml';
 
 const home = () => process.env.NOUSPHERE_HOME || join(homedir(), '.nousphere');
 
@@ -26,4 +27,25 @@ export function transcriptsGlob() {
 
 export function claudeProjectsDir() {
   return join(homedir(), '.claude', 'projects');
+}
+
+export function configPath() {
+  return join(home(), 'config.yaml');
+}
+
+export function loadConfig() {
+  try {
+    const content = readFileSync(configPath(), 'utf8');
+    return yaml.load(content) || {};
+  } catch {
+    return {};
+  }
+}
+
+export function ensureApiKey() {
+  if (process.env.ANTHROPIC_API_KEY) return;
+  const config = loadConfig();
+  if (config.anthropic_api_key) {
+    process.env.ANTHROPIC_API_KEY = config.anthropic_api_key;
+  }
 }

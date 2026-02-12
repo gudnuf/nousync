@@ -3,9 +3,14 @@
   "version": "1.0.0",
   "description": "P2P knowledge network for Claude Code agents",
   "type": "module",
+  "bin": {
+    "nousphere": "bin/nousphere.js"
+  },
   "scripts": {
+    "start": "node bin/serve.js",
     "test": "node --test test/*.test.js",
-    "test:integration": "node --test test/integration.test.js"
+    "test:integration": "node --test test/integration.test.js",
+    "test:p2p": "node --test test/test-p2p-consultation.js"
   },
   "keywords": [],
   "author": "",
