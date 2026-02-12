@@ -38,6 +38,10 @@
   "homepage": "https://nousync.ai",
   "dependencies": {
     "@anthropic-ai/sdk": "^0.39.0",
+    "better-sqlite3": "^12.6.2",
+    "cbor-x": "^1.6.0",
+    "coco-cashu-core": "^1.1.2-rc.47",
+    "coco-cashu-sqlite3": "^1.1.2-rc.47",
     "express": "^5.2.1",
     "glob": "^11.0.0",
     "gray-matter": "^4.0.3",

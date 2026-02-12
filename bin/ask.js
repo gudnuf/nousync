@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 
+import { createInterface } from 'node:readline';
 import { AgentClient } from '../packages/client/connector.js';
 
 const args = process.argv.slice(2);
@@ -63,7 +64,34 @@ async function run() {
 
   if (!question) usage();
 
-  const result = await withClient(c => c.ask(question, { sessionId }));
+  let result = await withClient(async (c) => {
+    const res = await c.ask(question, { sessionId });
+
+    if (res.payment_required) {
+      console.log(`Payment required: ${res.amount} ${res.unit}`);
+      console.log(`Paste a cashu token to pay:`);
+
+      const rl = createInterface({ input: process.stdin, output: process.stdout });
+      const token = await new Promise(resolve => rl.question('> ', answer => {
+        rl.close();
+        resolve(answer.trim());
+      }));
+
+      if (!token) {
+        console.error('No token provided.');
+        process.exit(1);
+      }
+
+      const retry = await c.ask(question, { sessionId, cashuToken: token });
+      if (retry.payment_required) {
+        console.error('Payment rejected. Check token amount and mint.');
+        process.exit(1);
+      }
+      return retry;
+    }
+
+    return res;
+  });
 
   console.log(result.response);
   console.log(`\n---`);

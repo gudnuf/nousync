@@ -8,6 +8,7 @@ Commands:
   init     Set up nousync (first-time or add new sessions)
   serve    Start sharing your knowledge over P2P
   ask      Query a running nousync agent
+  wallet   Manage cashu wallet (balance, withdraw)
 
 Run 'nousync <command> --help' for details on each command.`;
 
@@ -17,9 +18,10 @@ if (!command || command === '--help' || command === '-h') {
 }
 
 const commands = {
-  init:  () => import('./init.js'),
-  serve: () => import('./serve.js'),
-  ask:   () => import('./ask.js'),
+  init:   () => import('./init.js'),
+  serve:  () => import('./serve.js'),
+  ask:    () => import('./ask.js'),
+  wallet: () => import('./wallet.js'),
 };
 
 if (!commands[command]) {

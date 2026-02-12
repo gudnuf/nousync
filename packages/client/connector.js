@@ -43,7 +43,7 @@ export class AgentClient {
     return `http://127.0.0.1:${this.localPort}`;
   }
 
-  async ask(question, { sessionId, context } = {}) {
+  async ask(question, { sessionId, context, cashuToken } = {}) {
     if (!this.connected) throw new Error('Not connected. Call connect() first.');
 
     const sid = sessionId || this.sessionId;
@@ -51,12 +51,25 @@ export class AgentClient {
     if (sid) body.session_id = sid;
     if (context) body.context = context;
 
+    const headers = { 'Content-Type': 'application/json' };
+    if (cashuToken) headers['X-Cashu'] = cashuToken;
+
     const res = await fetch(`${this.baseUrl}/ask`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers,
       body: JSON.stringify(body),
       signal: AbortSignal.timeout(this.timeout),
     });
+
+    if (res.status === 402) {
+      const data = await res.json();
+      return {
+        payment_required: true,
+        payment_request: res.headers.get('x-cashu'),
+        amount: data.amount,
+        unit: data.unit,
+      };
+    }
 
     if (!res.ok) {
       const err = await res.json().catch(() => ({ error: res.statusText }));

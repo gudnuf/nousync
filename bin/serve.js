@@ -4,7 +4,7 @@ import { existsSync } from 'node:fs';
 import { join } from 'node:path';
 import { createAgentServer } from '../packages/agent/server.js';
 import { startNetwork, getOrCreateSeed } from '../packages/agent/network.js';
-import { sessionsDir, indexesDir, seedPath, ensureApiKey } from '../packages/core/paths.js';
+import { sessionsDir, indexesDir, seedPath, ensureApiKey, loadConfig } from '../packages/core/paths.js';
 
 ensureApiKey();
 
@@ -25,11 +25,22 @@ if (!existsSync(indexPath)) {
   console.error(`Warning: index not found: ${indexPath}`);
 }
 
+const config = loadConfig();
+
+let wallet = null;
+if (config.payment?.enabled) {
+  const { createWallet } = await import('../packages/agent/wallet.js');
+  wallet = await createWallet(config);
+  console.log(`Payment enabled: ${config.payment.amount} ${config.payment.unit} per question`);
+}
+
 const app = createAgentServer({
   agentId: 'local',
   displayName: 'Nousync Local Agent',
   sessionsDir: sessions,
   indexPath,
+  wallet,
+  config,
 });
 
 const seed = getOrCreateSeed(seedPath());
@@ -39,5 +50,6 @@ console.log(network.url);
 process.on('SIGINT', async () => {
   console.log('\nShutting down...');
   await network.stop();
+  if (wallet) await wallet.destroy();
   process.exit(0);
 });

@@ -4,8 +4,9 @@ import yaml from 'js-yaml';
 import { retrieveRelevantSessions } from '../core/retrieval.js';
 import { synthesize } from './synthesizer.js';
 import { createSessionStore } from './sessions.js';
+import { createPaymentMiddleware } from './payment.js';
 
-export function createAgentServer({ agentId, displayName, sessionsDir, indexPath, client, model }) {
+export function createAgentServer({ agentId, displayName, sessionsDir, indexPath, client, model, wallet, config }) {
   const app = express();
   const store = createSessionStore();
   const startTime = Date.now();
@@ -21,6 +22,9 @@ export function createAgentServer({ agentId, displayName, sessionsDir, indexPath
     });
     next();
   });
+
+  // Payment gate (no-op when payment disabled)
+  app.use(createPaymentMiddleware(wallet, config || {}));
 
   app.post('/ask', async (req, res, next) => {
     try {
@@ -98,13 +102,22 @@ export function createAgentServer({ agentId, displayName, sessionsDir, indexPath
         }
       }
 
-      res.json({
+      const profile = {
         agent_id: agentId,
         display_name: displayName,
         domains,
         session_count: sessionCount,
         status: 'available',
-      });
+      };
+
+      if (config?.payment?.enabled) {
+        profile.payment = {
+          amount: config.payment.amount,
+          unit: config.payment.unit,
+        };
+      }
+
+      res.json(profile);
     } catch (err) {
       next(err);
     }
