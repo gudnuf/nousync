@@ -1,10 +1,21 @@
 {
   "name": "nousync",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "P2P knowledge network for Claude Code agents",
   "type": "module",
   "bin": {
     "nousync": "bin/nousync.js"
+  },
+  "files": [
+    "bin/",
+    "packages/"
+  ],
+  "exports": {
+    ".": "./bin/nousync.js",
+    "./client": "./packages/client/connector.js"
+  },
+  "engines": {
+    "node": ">=18"
   },
   "scripts": {
     "start": "node bin/serve.js",
@@ -12,9 +23,19 @@
     "test:integration": "node --test test/integration.test.js",
     "test:p2p": "node --test test/test-p2p-consultation.js"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "keywords": [
+    "claude-code",
+    "p2p",
+    "knowledge-sharing",
+    "ai-agents"
+  ],
+  "author": "gudnuf",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gudnuf/nousync.git"
+  },
+  "homepage": "https://nousync.ai",
   "dependencies": {
     "@anthropic-ai/sdk": "^0.39.0",
     "express": "^5.2.1",
