@@ -74,11 +74,23 @@ Reusable patterns, snippets, or architectural decisions worth remembering.
 ## Components
 
 ### 1. Skill: `/nousphere:capture`
-- Contains the schema template and distillation instructions
-- Claude reviews the session, drafts the entry
-- Asks human: "Anything to add about what worked or what was frustrating?"
-- Writes to `~/.nousphere/sessions/YYYY-MM-DD-<slug>.md`
-- Regenerates `~/.nousphere/index.md`
+
+**Files:**
+- `skills/capture/SKILL.md` — Distillation logic and instructions
+- `skills/capture/schema.md` — Frontmatter + body template (Claude reads as reference)
+
+**Flow:**
+1. Review current session context, judge if worth capturing
+2. Draft frontmatter fields (infer project, tags, stack from context)
+3. Draft body sections (what was built, what failed, what worked, gotchas, patterns)
+4. Ask human: "Anything to add about what worked or what was frustrating?"
+5. Generate slug from task description
+6. Ensure `~/.nousphere/sessions/` exists
+7. Write the file (default: save with summary; `--preview` flag shows full entry first)
+8. Confirm: show key_insight + filename
+
+**Dev setup:** Load skill directly from the nousphere repo directory.
+**Later:** Installable — users clone repo and symlink or run an install script.
 
 ### 2. Global CLAUDE.md Instruction
 - Added to `~/.claude/CLAUDE.md`
@@ -98,13 +110,25 @@ Reusable patterns, snippets, or architectural decisions worth remembering.
 
 ## Directory Structure
 
+**Repo (development):**
+```
+nousphere/
+  skills/
+    capture/
+      SKILL.md        # Distillation logic
+      schema.md       # Frontmatter + body template
+  docs/
+    brainstorms/      # This file lives here
+```
+
+**User's system (runtime output):**
 ```
 ~/.nousphere/
   sessions/
     2026-02-12-auth-refactor.md
     2026-02-11-api-rate-limiting.md
     ...
-  index.md          # Auto-generated overview
+  index.md            # Auto-generated overview
 ```
 
 ## Resolved Questions

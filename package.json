@@ -1,19 +1,21 @@
 {
   "name": "nousphere",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "directories": {
-    "doc": "docs"
-  },
+  "description": "P2P knowledge network for Claude Code agents",
+  "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node --test test/*.test.js",
+    "test:integration": "node --test test/integration.test.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.39.0",
     "express": "^5.2.1",
-    "holesail": "^2.4.1"
+    "glob": "^11.0.0",
+    "gray-matter": "^4.0.3",
+    "holesail": "^2.4.1",
+    "js-yaml": "^4.1.0"
   }
 }

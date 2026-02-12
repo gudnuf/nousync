@@ -1,0 +1,146 @@
+domains:
+  - name: Git Workflow Management
+    summary: >-
+      Git operations including initial commits, worktree workflows, pre-commit
+      hooks, and repository configuration best practices
+    depth: working
+    tags:
+      - git-initial-commit
+      - git-worktree
+      - pre-commit-hooks
+      - typescript-strict
+      - biome-lint
+    sessions:
+      - 0c5c4f5a-a2d0-48fd-bb63-645124c42a7b
+      - 59de52e0-8e74-4828-9cc3-29fc7609aa29
+    key_insights:
+      - >-
+        When committing .claude/settings.json with a project (for plugin
+        enablement), it should be included in the repo as it represents
+        project-level configuration, not user-level preferences
+      - >-
+        Pre-commit hooks enforcing TypeScript strict mode surface pre-existing
+        code quality issues; fixing these upfront (conflicting react-hook-form
+        scaffolding, Tamagui v4 color type mismatches) enables clean git
+        workflows and prevents hook bypass habits
+  - name: P2P Networking Infrastructure
+    summary: >-
+      Peer-to-peer networking implementations and session sharing using Holesail
+      and related technologies
+    depth: surface
+    tags:
+      - holesail-p2p
+      - p2p-session-sharing
+      - nix-flake-direnv
+      - claude-code-plugin
+    sessions:
+      - 0c5c4f5a-a2d0-48fd-bb63-645124c42a7b
+    key_insights:
+      - >-
+        When committing .claude/settings.json with a project (for plugin
+        enablement), it should be included in the repo as it represents
+        project-level configuration, not user-level preferences
+  - name: React Native Mobile Development
+    summary: >-
+      React Native and Expo applications with Tamagui UI framework, form
+      handling, and local state persistence
+    depth: surface
+    tags:
+      - react-native
+      - expo-router
+      - tamagui
+      - tamagui-v4-colors
+      - react-hook-form-conflict
+      - localStorage-persistence
+      - typescript
+    sessions:
+      - 59de52e0-8e74-4828-9cc3-29fc7609aa29
+    key_insights:
+      - >-
+        Pre-commit hooks enforcing TypeScript strict mode surface pre-existing
+        code quality issues; fixing these upfront (conflicting react-hook-form
+        scaffolding, Tamagui v4 color type mismatches) enables clean git
+        workflows and prevents hook bypass habits
+  - name: Nix Development Environments
+    summary: >-
+      Nix flake configurations for reproducible development environments
+      including Docker integration and direnv setup
+    depth: working
+    tags:
+      - nix
+      - nix-flake-direnv
+      - nix-flake-docker
+      - nix-flake-deployment
+      - nixos
+      - direnv
+    sessions:
+      - 0c5c4f5a-a2d0-48fd-bb63-645124c42a7b
+      - 59de52e0-8e74-4828-9cc3-29fc7609aa29
+      - cf1e9c09-4cd0-4320-80dc-9cf38d849da5
+    key_insights:
+      - >-
+        When committing .claude/settings.json with a project (for plugin
+        enablement), it should be included in the repo as it represents
+        project-level configuration, not user-level preferences
+      - >-
+        Pre-commit hooks enforcing TypeScript strict mode surface pre-existing
+        code quality issues; fixing these upfront (conflicting react-hook-form
+        scaffolding, Tamagui v4 color type mismatches) enables clean git
+        workflows and prevents hook bypass habits
+      - >-
+        Custom Claude Code skills are invoked via XML-style command syntax, not
+        natural language tool names. The update-context skill automates
+        CLAUDE.md maintenance with explicit principles (120-150 line target,
+        delete > add, durable > transient) and creates comprehensive initial
+        context by systematically reading README, manifests, key source files,
+        and identifying architectural patterns across the codebase.
+  - name: Rust Web Services
+    summary: >-
+      Rust-based web applications using Axum framework with SSR, template
+      rendering, and markdown processing
+    depth: surface
+    tags:
+      - rust
+      - rust-workspace
+      - axum
+      - axum-ssr
+      - tera-templates
+      - markdown-frontmatter
+      - pulldown-cmark
+      - syntect
+      - tower-http
+      - tokio
+    sessions:
+      - cf1e9c09-4cd0-4320-80dc-9cf38d849da5
+    key_insights:
+      - >-
+        Custom Claude Code skills are invoked via XML-style command syntax, not
+        natural language tool names. The update-context skill automates
+        CLAUDE.md maintenance with explicit principles (120-150 line target,
+        delete > add, durable > transient) and creates comprehensive initial
+        context by systematically reading README, manifests, key source files,
+        and identifying architectural patterns across the codebase.
+  - name: Claude Code Tooling
+    summary: >-
+      Claude Code skills, context management, and project documentation
+      automation through custom commands and CLAUDE.md maintenance
+    depth: surface
+    tags:
+      - claude-code-skills
+      - claude-code-plugin
+      - update-context-skill
+      - claude-md-generation
+      - project-documentation
+      - context-maintenance
+    sessions:
+      - cf1e9c09-4cd0-4320-80dc-9cf38d849da5
+    key_insights:
+      - >-
+        Custom Claude Code skills are invoked via XML-style command syntax, not
+        natural language tool names. The update-context skill automates
+        CLAUDE.md maintenance with explicit principles (120-150 line target,
+        delete > add, durable > transient) and creates comprehensive initial
+        context by systematically reading README, manifests, key source files,
+        and identifying architectural patterns across the codebase.
+session_count: 3
+generated_at: '2026-02-12T20:10:29.098Z'
