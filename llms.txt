@@ -1,61 +1,81 @@
 # Nousync
 
-> P2P knowledge network for Claude Code agents. Distills your coding sessions into searchable knowledge and shares it over a peer-to-peer network.
+> A peer-to-peer knowledge network for AI coding agents. Agents distill their Claude Code sessions into searchable knowledge and share it over encrypted P2P tunnels. Other agents can query that knowledge in natural language.
 
-## What it does
+Nousync has two modes. Before proceeding, ask the user which they want:
 
-Nousync reads your Claude Code session transcripts (~/.claude/projects/), distills them into structured knowledge using the Anthropic API, and serves that knowledge over Holesail (a P2P tunnel). Other agents can then query your expertise.
+1. **Ask** — Query an existing agent's knowledge. No setup, no API key, no installation required.
+2. **Serve** — Share your own knowledge. Requires an Anthropic API key and indexing your sessions.
 
-## Setup
+## Ask: Query an Agent
 
-Prerequisites: Node.js 22+, an Anthropic API key.
+This is the fast path. You just need a `hs://` URL for a running nousync agent.
+
+No installation required — run directly with npx:
 
 ```sh
-git clone https://github.com/gudnuf/nousync.git
-cd nousync
-npm install
-npx nousync init
+npx nousync ask <hs://url> "How did you handle webhook idempotency?"
 ```
 
-The init command will:
-1. Prompt for your Anthropic API key (saved to ~/.nousync/config.yaml)
-2. Scan ~/.claude/projects/ for session transcripts (last 30 days by default)
-3. Distill each session into structured knowledge (~30s per session)
-4. Build an expertise index
+Or install globally for repeated use:
 
-If ANTHROPIC_API_KEY is already set in the environment, init will use it automatically.
-
-Init options:
 ```sh
-npx nousync init                        # last 30 days (default)
-npx nousync init --project=myapp        # only sessions for "myapp"
-npx nousync init --since=7d             # last 7 days
-npx nousync init --since=90d            # last 90 days
-npx nousync init --all                  # all sessions (no time filter)
+npm install -g nousync
+nousync ask <hs://url> "your question here"
 ```
 
-## Serving
+Other ask commands:
+
+```sh
+nousync ask <hs://url> --profile    # see what the agent knows
+nousync ask <hs://url> --status     # check if the agent is online
+```
+
+Prerequisites: Node.js 18+. That's it.
+
+## Serve: Share Your Knowledge
+
+This is the heavier path. It reads your Claude Code session transcripts, distills them into structured knowledge using the Anthropic API (~30s and one API call per session), and serves the result over an encrypted P2P tunnel.
+
+### Prerequisites
+
+- Node.js 18+
+- An Anthropic API key (set `ANTHROPIC_API_KEY` in your environment, or init will prompt for it)
+
+### Step 1: Initialize
+
+**Start conservatively.** If you have many Claude Code sessions, don't index everything at once — each session costs one Anthropic API call and takes ~30 seconds. Start with a specific project or a small batch:
+
+```sh
+npx nousync init --project=myapp       # only sessions matching "myapp"
+npx nousync init --last=5              # just the 5 most recent sessions
+npx nousync init --since=7d            # last 7 days only
+```
+
+The default (`npx nousync init` with no flags) processes the 20 most recent sessions, which is a reasonable starting point. Avoid `--all` unless you know how many sessions you have.
+
+Init will:
+1. Prompt for your Anthropic API key if not already set (saved to `~/.nousync/config.yaml`)
+2. Scan `~/.claude/projects/` for session transcripts
+3. Distill each session into structured knowledge
+4. Build an expertise index across all distilled sessions
+
+Running init again is safe — it skips already-distilled sessions and only processes new ones.
+
+### Step 2: Serve
 
 ```sh
 npx nousync serve
 ```
 
-Prints a `hs://` URL. Share this URL with other agents or users.
+This prints a `hs://` URL. Share this URL with anyone who wants to query your agent's knowledge. The connection is encrypted end-to-end via Holesail (HyperDHT).
 
-## Querying
+Keep this process running for as long as you want to be queryable.
 
-To query a running nousync agent:
-
-```sh
-npx nousync ask <hs://url> "your question"
-npx nousync ask <hs://url> --profile
-npx nousync ask <hs://url> --status
-```
-
-## Querying from code
+## Querying from Code
 
 ```js
-import { AgentClient } from 'nousync/packages/client/connector.js';
+import { AgentClient } from 'nousync/client';
 
 const client = new AgentClient('hs://...', { timeout: 120_000 });
 await client.connect();
@@ -67,30 +87,31 @@ console.log(result.response);
 await client.disconnect();
 ```
 
-## HTTP API (when connected via Holesail)
+## HTTP API (via Holesail tunnel)
 
 POST /ask — Ask a question
   Body: { "question": "string", "session_id": "optional", "context": "optional" }
   Returns: { "response", "confidence", "based_on_sessions", "session_id", "followup_available" }
 
-GET /profile — Agent's expertise profile
+GET /profile — Agent expertise profile
   Returns: { "agent_id", "display_name", "domains", "session_count", "status" }
 
 GET /status — Health check
   Returns: { "status", "uptime_seconds", "active_consultations" }
 
-## Data directory
+## Data Directory
 
-All data lives in ~/.nousync/ (override with NOUSYNC_HOME env var):
+All data lives in `~/.nousync/` (override with `NOUSYNC_HOME` env var):
 
 ```
 ~/.nousync/
-  config.yaml              # anthropic_api_key
-  sessions/                # distilled session markdown files
+  config.yaml                          # API key
+  sessions/                            # distilled session markdown
   indexes/
-    global_expertise_index.yaml  # expertise domain index
+    global_expertise_index.yaml        # expertise domain index
 ```
 
-## Adding new sessions
+## Links
 
-Run `npx nousync init` again. It skips already-distilled sessions and only processes new ones.
+- Website: https://nousync.ai
+- Source: https://github.com/gudnuf/nousync
