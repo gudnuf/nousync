@@ -1,5 +1,6 @@
 import Anthropic from '@anthropic-ai/sdk';
 import { serialize } from '../core/schema.js';
+import { log } from '../core/log.js';
 
 const SYNTHESIZE_TOOL = {
   name: 'synthesize_response',
@@ -61,6 +62,10 @@ export async function synthesize(question, retrievedSessions, options = {}) {
   const client = injectedClient || new Anthropic();
   const modelId = model || 'claude-sonnet-4-5-20250929';
 
+  const shortModel = modelId.split('-').slice(0, 2).join('-');
+  log('\ud83e\udd16', 'Calling Claude...', `${shortModel} \u00b7 ${retrievedSessions.length} sessions`);
+  const t0 = Date.now();
+
   const response = await client.messages.create({
     model: modelId,
     max_tokens: 4096,
@@ -69,6 +74,10 @@ export async function synthesize(question, retrievedSessions, options = {}) {
     tool_choice: { type: 'tool', name: 'synthesize_response' },
     messages,
   });
+
+  const elapsed = Date.now() - t0;
+  const { input_tokens, output_tokens } = response.usage;
+  log('\u2714', 'Synthesis complete', `${input_tokens}+${output_tokens} tokens \u00b7 ${elapsed}ms`);
 
   const toolUse = response.content.find(b => b.type === 'tool_use');
   if (!toolUse) {

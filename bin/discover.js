@@ -27,6 +27,7 @@ try {
   console.log('Connecting to directory...');
   await client.connect();
 
+  console.log('Searching for agents...');
   const result = await client.discover(query);
 
   if (result.recommendations.length === 0) {

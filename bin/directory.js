@@ -21,7 +21,6 @@ let wallet = null;
 if (config.payment?.enabled) {
   const { createWallet } = await import('../packages/core/wallet.js');
   wallet = await createWallet(config);
-  console.log(`Payment enabled: ${config.payment.amount} ${config.payment.unit} per connection`);
 }
 
 const { default: Anthropic } = await import('@anthropic-ai/sdk');
@@ -32,7 +31,17 @@ const app = createDirectoryServer({ registryPath, wallet, config, client, model 
 
 const seed = getOrCreateSeed(seedFile);
 const network = await startNetwork(app, { seed });
-console.log(network.url);
+
+const shortModel = model.split('-').slice(0, 2).join('-');
+const paymentLine = config.payment?.enabled
+  ? `${config.payment.amount} ${config.payment.unit}/connect`
+  : 'free';
+console.log(`
+\x1b[1m\x1b[35m  nousync directory\x1b[0m
+  \x1b[2murl\x1b[0m       ${network.url}
+  \x1b[2mmodel\x1b[0m     ${shortModel}
+  \x1b[2mpayment\x1b[0m   ${paymentLine}
+`);
 
 process.on('SIGINT', async () => {
   console.log('\nShutting down directory...');

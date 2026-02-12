@@ -7,6 +7,7 @@ import { createAgentServer } from '../packages/agent/server.js';
 import { startNetwork, getOrCreateSeed } from '../packages/core/network.js';
 import { sessionsDir, indexesDir, seedPath, ensureApiKey, loadConfig, DIRECTORY_URL } from '../packages/core/paths.js';
 import { DirectoryClient } from '../packages/directory/client.js';
+import { log } from '../packages/core/log.js';
 
 ensureApiKey();
 
@@ -33,12 +34,23 @@ let wallet = null;
 if (config.payment?.enabled) {
   const { createWallet } = await import('../packages/core/wallet.js');
   wallet = await createWallet(config);
-  console.log(`Payment enabled: ${config.payment.amount} ${config.payment.unit} per question`);
 }
 
+// Read session count from index
+let sessionCount = 0;
+if (existsSync(indexPath)) {
+  try {
+    const idx = yaml.load(readFileSync(indexPath, 'utf8'));
+    sessionCount = idx?.session_count || 0;
+  } catch {}
+}
+
+const agentId = config.agent_id || 'local';
+const displayName = config.display_name || 'Nousync Local Agent';
+
 const app = createAgentServer({
-  agentId: 'local',
-  displayName: 'Nousync Local Agent',
+  agentId,
+  displayName,
   sessionsDir: sessions,
   indexPath,
   wallet,
@@ -47,7 +59,18 @@ const app = createAgentServer({
 
 const seed = getOrCreateSeed(seedPath());
 const network = await startNetwork(app, { seed });
-console.log(network.url);
+
+// Startup banner
+const paymentLine = config.payment?.enabled
+  ? `${config.payment.amount} ${config.payment.unit}/question`
+  : 'free';
+console.log(`
+\x1b[1m\x1b[36m  nousync agent\x1b[0m
+  \x1b[2mname\x1b[0m      ${displayName}
+  \x1b[2murl\x1b[0m       ${network.url}
+  \x1b[2msessions\x1b[0m  ${sessionCount}
+  \x1b[2mpayment\x1b[0m   ${paymentLine}
+`);
 
 // Auto-register with directory
 let dirClient = null;
@@ -68,9 +91,6 @@ if (DIRECTORY_URL && !DIRECTORY_URL.includes('TBD')) {
       }
     }
 
-    const agentId = config.agent_id || 'local';
-    const displayName = config.display_name || 'Nousync Local Agent';
-
     await dirClient.register({
       agent_id: agentId,
       display_name: displayName,
@@ -78,7 +98,7 @@ if (DIRECTORY_URL && !DIRECTORY_URL.includes('TBD')) {
       expertise_index: expertiseIndex,
       payment: config.payment?.enabled ? { amount: config.payment.amount, unit: config.payment.unit } : null,
     });
-    console.log('Registered with directory');
+    log('\ud83d\udce1', 'Registered with directory');
 
     // Heartbeat every 30s
     heartbeatInterval = setInterval(async () => {
@@ -90,7 +110,7 @@ if (DIRECTORY_URL && !DIRECTORY_URL.includes('TBD')) {
     }, 30_000);
     heartbeatInterval.unref();
   } catch (err) {
-    console.log(`Warning: could not register with directory: ${err.message}`);
+    log('\u26a0\ufe0f', 'Directory registration failed', err.message);
     dirClient = null;
   }
 }

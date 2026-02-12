@@ -1,4 +1,5 @@
 import { extractKeywords, scoreTagOverlap, scoreInsightMatch } from '../core/retrieval.js';
+import { log } from '../core/log.js';
 
 export function scoreAgents(query, agents, { maxResults = 10 } = {}) {
   const keywords = extractKeywords(query);
@@ -95,6 +96,8 @@ export async function discoverAgents(query, onlineAgents, { client, model, maxSh
     return { recommendations: [] };
   }
 
+  log('\ud83d\udcca', `Shortlisted ${shortlist.length} candidates`, `from ${onlineAgents.length} online`);
+
   // If no client provided, return scored results without LLM reasoning
   if (!client) {
     return {
@@ -114,6 +117,9 @@ export async function discoverAgents(query, onlineAgents, { client, model, maxSh
   const systemPrompt = buildDiscoveryPrompt(shortlist);
   const modelId = model || 'claude-sonnet-4-5-20250929';
 
+  log('\ud83e\udd16', 'Ranking agents with AI...', modelId.split('-').slice(0, 2).join('-'));
+  const t0 = Date.now();
+
   const response = await client.messages.create({
     model: modelId,
     max_tokens: 2048,
@@ -123,7 +129,11 @@ export async function discoverAgents(query, onlineAgents, { client, model, maxSh
     messages: [{ role: 'user', content: query }],
   });
 
+  const elapsed = Date.now() - t0;
   const toolUse = response.content.find(b => b.type === 'tool_use');
+  const count = toolUse ? toolUse.input.recommendations.length : 0;
+  log('\u2714', `AI ranking complete`, `${count} recommendation(s) \u00b7 ${elapsed}ms`);
+
   if (!toolUse) {
     return { recommendations: [] };
   }

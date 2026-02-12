@@ -64,7 +64,10 @@ async function run() {
 
   if (!question) usage();
 
+  console.log('Connecting to agent...');
+
   let result = await withClient(async (c) => {
+    console.log('Asking...');
     const res = await c.ask(question, { sessionId });
 
     if (res.payment_required) {

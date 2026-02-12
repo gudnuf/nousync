@@ -5,6 +5,7 @@ import { retrieveRelevantSessions } from '../core/retrieval.js';
 import { synthesize } from './synthesizer.js';
 import { createSessionStore } from './sessions.js';
 import { createPaymentMiddleware } from '../core/payment.js';
+import { log } from '../core/log.js';
 
 export function createAgentServer({ agentId, displayName, sessionsDir, indexPath, client, model, wallet, config }) {
   const app = express();
@@ -12,16 +13,6 @@ export function createAgentServer({ agentId, displayName, sessionsDir, indexPath
   const startTime = Date.now();
 
   app.use(express.json());
-
-  // Request logging
-  app.use((req, res, next) => {
-    const start = Date.now();
-    res.on('finish', () => {
-      const duration = Date.now() - start;
-      console.log(`${req.method} ${req.path} ${res.statusCode} ${duration}ms`);
-    });
-    next();
-  });
 
   // Payment gate (no-op when payment disabled)
   app.use(createPaymentMiddleware(wallet, config || {}));
@@ -35,8 +26,14 @@ export function createAgentServer({ agentId, displayName, sessionsDir, indexPath
         return;
       }
 
+      const askStart = Date.now();
+      const truncated = question.length > 80 ? question.slice(0, 80) + '...' : question;
+      log('\u2753', 'Question received', truncated);
+
       // Retrieve relevant sessions
       const retrieved = await retrieveRelevantSessions(question, sessionsDir, indexPath);
+      const domains = retrieved.sessions.flatMap(s => s.frontmatter?.domains || []).filter(Boolean);
+      log('\ud83d\udd0d', `Retrieved ${retrieved.sessions.length} sessions`, domains.length ? domains.join(', ') : '');
 
       // Build conversation history from session store
       let conversationHistory = [];
@@ -69,6 +66,9 @@ export function createAgentServer({ agentId, displayName, sessionsDir, indexPath
 
       // Store exchange
       store.addExchange(sessionId, question, result.response);
+
+      const duration = Date.now() - askStart;
+      log('\u2705', `Response sent`, `confidence=${result.confidence} ${duration}ms`);
 
       res.json({
         response: result.response,

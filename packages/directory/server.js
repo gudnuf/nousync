@@ -1,6 +1,7 @@
 import express from 'express';
 import { createRegistry } from './registry.js';
 import { createPaymentMiddleware } from '../core/payment.js';
+import { log } from '../core/log.js';
 
 export function createDirectoryServer({ registryPath, wallet, config, client, model }) {
   const app = express();
@@ -8,16 +9,6 @@ export function createDirectoryServer({ registryPath, wallet, config, client, mo
   const startTime = Date.now();
 
   app.use(express.json());
-
-  // Request logging
-  app.use((req, res, next) => {
-    const start = Date.now();
-    res.on('finish', () => {
-      const duration = Date.now() - start;
-      console.log(`${req.method} ${req.path} ${res.statusCode} ${duration}ms`);
-    });
-    next();
-  });
 
   // Payment gate on /connect only
   app.use(createPaymentMiddleware(wallet, config || {}, { gatePaths: ['/connect'] }));
@@ -36,6 +27,7 @@ export function createDirectoryServer({ registryPath, wallet, config, client, mo
       }
 
       const entry = registry.register({ agent_id, display_name, connection_key, expertise_index, payment });
+      log('\ud83d\udce1', 'Agent registered', `${display_name || agent_id}`);
       res.json({ registered: true, agent_id: entry.agent_id });
     } catch (err) {
       next(err);
@@ -72,9 +64,13 @@ export function createDirectoryServer({ registryPath, wallet, config, client, mo
         return;
       }
 
+      log('\ud83d\udd0d', 'Discovery query', query);
+
       // Phase 3 wires in discoverAgents here
       const { discoverAgents } = await import('./discovery.js');
       const result = await discoverAgents(query, registry.getOnlineAgents(), { client, model });
+
+      log('\u2705', `Discovery complete`, `${result.recommendations.length} recommendation(s)`);
       res.json(result);
     } catch (err) {
       next(err);
@@ -101,6 +97,7 @@ export function createDirectoryServer({ registryPath, wallet, config, client, mo
         return;
       }
 
+      log('\ud83d\udd17', 'Connect requested', agent.display_name || agent_id);
       res.json({ connection_key: agent.connection_key, display_name: agent.display_name });
     } catch (err) {
       next(err);
