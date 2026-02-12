@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createAgentServer } from '../packages/agent/server.js';
-import { startNetwork } from '../packages/agent/network.js';
+import { startNetwork } from '../packages/core/network.js';
 import { AgentClient } from '../packages/client/connector.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));

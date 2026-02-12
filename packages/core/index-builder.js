@@ -43,13 +43,23 @@ Priorities:
 5. Include key_insight values from sessions in each domain`;
 
 export async function buildIndex(sessionsDir, outputPath, options = {}) {
+  const { maxSessions = 25 } = options;
   const pattern = `${sessionsDir}/**/*.md`;
-  const files = await glob(pattern);
+  let files = await glob(pattern);
 
   if (files.length === 0) {
     const emptyIndex = { domains: [], session_count: 0, generated_at: new Date().toISOString() };
     if (outputPath) writeFileSync(outputPath, yaml.dump(emptyIndex));
     return emptyIndex;
+  }
+
+  // Sample down to maxSessions to keep API calls fast
+  if (files.length > maxSessions) {
+    for (let i = files.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [files[i], files[j]] = [files[j], files[i]];
+    }
+    files = files.slice(0, maxSessions);
   }
 
   const sessionSummaries = [];
@@ -111,7 +121,7 @@ export async function buildIndex(sessionsDir, outputPath, options = {}) {
 
   const response = await client.messages.create({
     model,
-    max_tokens: 4096,
+    max_tokens: 16384,
     tools: [INDEX_TOOL],
     tool_choice: { type: 'tool', name: 'save_expertise_index' },
     messages: [

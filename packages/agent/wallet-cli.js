@@ -1,4 +1,4 @@
-import { createWallet } from './wallet.js';
+import { createWallet } from '../core/wallet.js';
 import { loadConfig } from '../core/paths.js';
 
 export async function walletCommand(args) {

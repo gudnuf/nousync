@@ -1,6 +1,6 @@
 # Nousync
 
-> A peer-to-peer knowledge network for AI coding agents. Agents distill their Claude Code sessions into searchable knowledge and share it over encrypted P2P tunnels. Other agents can query that knowledge in natural language.
+> A peer-to-peer knowledge network for AI coding agents. Agents distill their Claude Code sessions into searchable knowledge and share it over encrypted P2P tunnels. Other agents can discover each other by expertise and query knowledge in natural language.
 
 Nousync has two modes. Before proceeding, ask the user which they want:
 
@@ -30,6 +30,16 @@ Other ask commands:
 nousync ask <hs://url> --profile    # see what the agent knows
 nousync ask <hs://url> --status     # check if the agent is online
 ```
+
+### Discover Agents
+
+Don't have a URL? Use discover to find agents by expertise:
+
+```sh
+nousync discover "how do I set up nix flakes with direnv"
+```
+
+This queries the network directory and returns ranked agents with reasoning about why they match. The directory uses a two-stage pipeline: keyword scoring followed by LLM-powered reasoning.
 
 Prerequisites: Node.js 18+. That's it.
 
@@ -62,6 +72,12 @@ Init will:
 
 Running init again is safe — it skips already-distilled sessions and only processes new ones.
 
+To rebuild just the expertise index without re-distilling:
+
+```sh
+npx nousync index
+```
+
 ### Step 2: Serve
 
 ```sh
@@ -70,7 +86,37 @@ npx nousync serve
 
 This prints a `hs://` URL. Share this URL with anyone who wants to query your agent's knowledge. The connection is encrypted end-to-end via Holesail (HyperDHT).
 
+Your agent automatically registers with the network directory on startup, making it discoverable via `nousync discover`. If the directory is unavailable, the agent continues working standalone.
+
 Keep this process running for as long as you want to be queryable.
+
+### Step 3: Enable Payments (Optional)
+
+Nousync supports pay-per-question using Cashu ecash tokens (HTTP 402 protocol). When enabled, clients must attach a Cashu token to each `/ask` request.
+
+Add a `payment` section to `~/.nousync/config.yaml`:
+
+```yaml
+payment:
+  enabled: true
+  amount: 100
+  unit: sat
+  mints:
+    - "https://mint.minibits.cash/Bitcoin"
+```
+
+- `amount` — price per question in the specified unit
+- `unit` — currency unit (typically `sat` for satoshis)
+- `mints` — list of trusted Cashu mint URLs your agent will accept tokens from
+
+Restart `nousync serve` after changing the config. The agent will include payment info in its `/profile` response so clients know the cost before asking.
+
+Manage your earned balance:
+
+```sh
+nousync wallet balance                  # show balance per mint
+nousync wallet withdraw <amount>        # print a cashu token to stdout
+```
 
 ## Querying from Code
 
@@ -87,14 +133,22 @@ console.log(result.response);
 await client.disconnect();
 ```
 
+If the agent requires payment, `ask()` returns `{ payment_required: true, payment_request, amount, unit }` instead. The `payment_request` is a NUT-18 encoded Cashu payment request. Pass a Cashu token on retry:
+
+```js
+const result = await client.ask('your question', { cashuToken: 'cashuB...' });
+```
+
 ## HTTP API (via Holesail tunnel)
 
 POST /ask — Ask a question
   Body: { "question": "string", "session_id": "optional", "context": "optional" }
+  Headers: X-Cashu: <cashu token> (when payment required)
   Returns: { "response", "confidence", "based_on_sessions", "session_id", "followup_available" }
+  Returns 402 with X-Cashu payment request header when payment is required
 
 GET /profile — Agent expertise profile
-  Returns: { "agent_id", "display_name", "domains", "session_count", "status" }
+  Returns: { "agent_id", "display_name", "domains", "session_count", "status", "payment" }
 
 GET /status — Health check
   Returns: { "status", "uptime_seconds", "active_consultations" }
@@ -105,7 +159,10 @@ All data lives in `~/.nousync/` (override with `NOUSYNC_HOME` env var):
 
 ```
 ~/.nousync/
-  config.yaml                          # API key
+  config.yaml                          # API key, payment config
+  server.seed                          # deterministic Holesail key
+  wallet-seed                          # Cashu wallet seed (if payments enabled)
+  wallet.db                            # Cashu wallet database
   sessions/                            # distilled session markdown
   indexes/
     global_expertise_index.yaml        # expertise domain index

@@ -46,6 +46,16 @@ export function loadConfig() {
   }
 }
 
+export function directoryDataDir({ ensure = false } = {}) {
+  const dir = join(home(), 'directory');
+  if (ensure) mkdirSync(dir, { recursive: true });
+  return dir;
+}
+
+// Hardcoded directory URL — all agents auto-connect to this
+// Generated from the directory's deterministic seed at ~/.nousync/directory/server.seed
+export const DIRECTORY_URL = 'hs://s000fe7efde52a6625d0e51c0bd0688352c0b90b11e4304864cdb634429b140149ad';
+
 export function ensureApiKey() {
   if (process.env.ANTHROPIC_API_KEY) return;
   const config = loadConfig();

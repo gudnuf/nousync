@@ -1,0 +1,1526 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nousync — Presidio Bitcoin Builder Day</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&family=JetBrains+Mono:wght@400;500;600&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/reveal.js@5.1.0/dist/reveal.css">
+<style>
+:root {
+  --bg-deep: #06080d;
+  --bg-surface: #0a0e17;
+  --bg-elevated: #0f1420;
+  --text-primary: #e8eaf0;
+  --text-secondary: #8b90a0;
+  --text-dim: #4a4f63;
+  --accent-glow: #5b8af5;
+  --accent-warm: #a78bfa;
+  --accent-teal: #5eead4;
+  --accent-rose: #f472b6;
+  --serif: 'Cormorant Garamond', Georgia, serif;
+  --mono: 'JetBrains Mono', 'Fira Code', monospace;
+  --sans: 'Inter', -apple-system, sans-serif;
+}
+
+.reveal-viewport { background: var(--bg-deep) !important; }
+.reveal { font-family: var(--sans); font-size: 32px; color: var(--text-primary); }
+.reveal .slides { text-align: left; }
+.reveal .slides section { padding: 40px 60px; }
+.reveal .slides section.full-bleed { padding: 0; }
+
+.reveal h1, .reveal h2, .reveal h3 {
+  font-family: var(--serif);
+  font-weight: 400;
+  color: var(--text-primary);
+  text-transform: none;
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+}
+.reveal h1 { font-size: 3.4em; }
+.reveal h2 { font-size: 1.8em; margin-bottom: 0.5em; }
+.reveal h3 { font-size: 1.1em; margin-bottom: 0.3em; }
+
+.reveal p {
+  color: var(--text-secondary);
+  font-size: 0.7em;
+  line-height: 1.7;
+  margin-bottom: 0.5em;
+}
+
+.reveal li {
+  color: var(--text-secondary);
+  font-size: 0.65em;
+  line-height: 1.8;
+  margin-bottom: 0.3em;
+}
+
+.reveal ul { list-style: none; padding-left: 0; }
+.reveal ul li::before {
+  content: "›";
+  color: var(--accent-teal);
+  font-weight: 600;
+  margin-right: 0.6em;
+}
+
+.reveal code {
+  font-family: var(--mono);
+  font-size: 0.85em;
+  color: var(--accent-glow);
+  background: rgba(91, 138, 245, 0.1);
+  padding: 0.1em 0.4em;
+  border-radius: 4px;
+}
+
+.reveal .slide-number {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--text-dim);
+  background: transparent;
+  right: 24px;
+  bottom: 16px;
+}
+
+.reveal .progress { height: 2px; color: var(--accent-glow); }
+.reveal .controls .navigate-left,
+.reveal .controls .navigate-right,
+.reveal .controls .navigate-up,
+.reveal .controls .navigate-down { color: var(--accent-glow); }
+
+.section-label {
+  font-family: var(--mono);
+  font-size: 0.45em;
+  color: var(--accent-glow);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  margin-bottom: 0.8em;
+}
+
+.gradient-brand {
+  font-style: italic;
+  background: linear-gradient(135deg, var(--text-primary) 0%, var(--accent-glow) 40%, var(--accent-warm) 70%, var(--accent-teal) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  filter: drop-shadow(0 0 60px rgba(91, 138, 245, 0.3));
+}
+
+.gradient-teal {
+  background: linear-gradient(135deg, var(--accent-teal), var(--accent-glow));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.gradient-warm {
+  background: linear-gradient(135deg, var(--accent-warm), var(--accent-rose));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.highlight { color: var(--accent-teal); }
+.highlight-warm { color: var(--accent-warm); }
+.highlight-rose { color: var(--accent-rose); }
+.highlight-blue { color: var(--accent-glow); }
+
+.centered {
+  text-align: center;
+  display: flex !important;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+.centered h2, .centered p { text-align: center; }
+
+.two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2em;
+  align-items: start;
+}
+
+.back-link {
+  position: fixed;
+  top: 16px;
+  left: 16px;
+  z-index: 100;
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--text-dim);
+  text-decoration: none;
+  letter-spacing: 0.05em;
+  transition: color 0.2s;
+}
+.back-link:hover { color: var(--accent-glow); }
+
+/* ── Terminal ── */
+.terminal {
+  background: var(--bg-surface);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 10px;
+  overflow: hidden;
+  font-family: var(--mono);
+  font-size: 0.48em;
+  line-height: 1.7;
+  text-align: left;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.04), inset 0 1px 0 rgba(255,255,255,0.04);
+  margin: 0.6em 0;
+}
+.terminal-header {
+  display: flex; align-items: center; gap: 6px;
+  padding: 10px 14px;
+  background: rgba(255,255,255,0.025);
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+.terminal-dot { width: 10px; height: 10px; border-radius: 50%; }
+.terminal-dot:nth-child(1) { background: rgba(255,95,86,0.5); }
+.terminal-dot:nth-child(2) { background: rgba(255,189,46,0.5); }
+.terminal-dot:nth-child(3) { background: rgba(39,201,63,0.5); }
+.terminal-body { padding: 14px 16px; }
+.t-prompt { color: var(--accent-teal); }
+.t-cmd { color: var(--text-primary); }
+.t-output { color: var(--text-dim); }
+.t-accent { color: var(--accent-glow); }
+.t-warm { color: var(--accent-warm); }
+.t-success { color: var(--accent-teal); }
+.t-rose { color: var(--accent-rose); }
+
+/* ── Problem/Solution ── */
+.problem-solution {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+  height: 100%;
+  min-height: 560px;
+}
+
+.ps-panel {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 3em 2.5em;
+  position: relative;
+}
+
+.ps-panel.problem {
+  background: radial-gradient(ellipse 80% 60% at 70% 50%, rgba(244, 114, 182, 0.06) 0%, transparent 70%);
+}
+
+.ps-panel.solution {
+  background: radial-gradient(ellipse 80% 60% at 30% 50%, rgba(94, 234, 212, 0.06) 0%, transparent 70%);
+  border-left: 1px solid rgba(255,255,255,0.04);
+}
+
+.ps-panel .section-label { margin-bottom: 0.6em; }
+.ps-panel.problem .section-label { color: var(--accent-rose); }
+.ps-panel.solution .section-label { color: var(--accent-teal); }
+
+.ps-panel h2 {
+  font-size: 1.4em;
+  margin-bottom: 0.6em;
+  line-height: 1.3;
+}
+
+.ps-panel p {
+  font-size: 0.6em;
+  line-height: 1.8;
+  max-width: 22em;
+}
+
+/* ── Pipeline Canvas ── */
+#pipeline-canvas {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+}
+
+.pipeline-slide {
+  position: relative;
+  overflow: hidden;
+}
+
+.pipeline-overlay {
+  position: absolute;
+  bottom: 20px;
+  left: 0; right: 0;
+  text-align: center;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.pipeline-overlay .hint {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--text-dim);
+  letter-spacing: 0.1em;
+}
+
+.pipeline-title-overlay {
+  position: absolute;
+  top: 30px;
+  left: 40px;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.pipeline-title-overlay .section-label { margin-bottom: 0.3em; }
+
+.pipeline-title-overlay h2 {
+  font-size: 1.4em;
+  font-family: var(--serif);
+  color: var(--text-primary);
+  font-weight: 400;
+}
+
+/* ── Stat Grid ── */
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.8em;
+  margin: 0.8em 0;
+}
+
+.stat-card {
+  background: var(--bg-surface);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 12px;
+  padding: 1.2em 0.8em;
+  text-align: center;
+}
+
+.stat-value {
+  font-family: var(--mono);
+  font-size: 1.5em;
+  font-weight: 600;
+  line-height: 1;
+  margin-bottom: 0.3em;
+}
+
+.stat-label {
+  font-family: var(--mono);
+  font-size: 0.38em;
+  color: var(--text-dim);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+/* ── Tech Pills ── */
+.tech-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5em;
+  margin: 0.5em 0;
+  justify-content: center;
+}
+
+.tech-pill {
+  font-family: var(--mono);
+  font-size: 0.42em;
+  padding: 0.4em 1em;
+  border-radius: 20px;
+  border: 1px solid rgba(255,255,255,0.08);
+  background: var(--bg-surface);
+  color: var(--text-secondary);
+  transition: border-color 0.3s, color 0.3s;
+}
+.tech-pill:hover {
+  border-color: rgba(255,255,255,0.2);
+  color: var(--text-primary);
+}
+
+/* ── Three-tier diagram ── */
+.tier-diagram {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+  margin: 0.8em auto;
+  max-width: 900px;
+  position: relative;
+}
+
+.tier {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1em;
+  width: 100%;
+  padding: 0.8em 0;
+  position: relative;
+}
+
+.tier-box {
+  background: var(--bg-surface);
+  border: 1.5px solid;
+  border-radius: 10px;
+  padding: 0.7em 1em;
+  text-align: center;
+  min-width: 140px;
+  position: relative;
+  z-index: 2;
+}
+
+.tier-box-title {
+  font-family: var(--mono);
+  font-size: 0.45em;
+  font-weight: 600;
+  margin-bottom: 0.15em;
+}
+
+.tier-box-sub {
+  font-family: var(--mono);
+  font-size: 0.33em;
+  color: var(--text-dim);
+}
+
+.tier-connector {
+  width: 1.5px;
+  height: 20px;
+  background: rgba(255,255,255,0.06);
+  margin: 0 auto;
+  position: relative;
+  z-index: 1;
+}
+
+.tier-connector-h {
+  height: 1.5px;
+  width: 30px;
+  background: rgba(255,255,255,0.06);
+}
+
+/* ── Discovery two-stage ── */
+.discovery-stages {
+  display: flex;
+  align-items: stretch;
+  gap: 0;
+  margin: 0.6em 0;
+}
+
+.discovery-stage {
+  flex: 1;
+  background: var(--bg-surface);
+  border: 1px solid rgba(255,255,255,0.06);
+  padding: 0.8em;
+  position: relative;
+}
+
+.discovery-stage:first-child {
+  border-radius: 10px 0 0 10px;
+  border-right: none;
+}
+
+.discovery-stage:last-child {
+  border-radius: 0 10px 10px 0;
+}
+
+.discovery-stage-num {
+  font-family: var(--mono);
+  font-size: 0.38em;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 0.4em;
+}
+
+.discovery-stage-title {
+  font-family: var(--mono);
+  font-size: 0.48em;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 0.3em;
+}
+
+.discovery-stage-desc {
+  font-size: 0.4em;
+  color: var(--text-dim);
+  line-height: 1.6;
+}
+
+.discovery-arrow {
+  display: flex;
+  align-items: center;
+  font-size: 0.5em;
+  color: var(--text-dim);
+  padding: 0 0.3em;
+  background: var(--bg-surface);
+  border-top: 1px solid rgba(255,255,255,0.06);
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+
+/* ── Payment steps ── */
+.payment-seq {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin: 0.5em 0;
+}
+
+.payment-step {
+  display: flex;
+  align-items: center;
+  gap: 1em;
+  padding: 0.5em 0;
+  opacity: 0;
+  transform: translateX(-10px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+.payment-step.visible {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.payment-step-num {
+  font-family: var(--mono);
+  font-size: 0.55em;
+  font-weight: 600;
+  width: 1.8em;
+  height: 1.8em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  border: 1.5px solid;
+  flex-shrink: 0;
+}
+
+.payment-step-text {
+  font-family: var(--mono);
+  font-size: 0.45em;
+  color: var(--text-secondary);
+}
+.payment-step-text strong {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.payment-connector {
+  width: 1.5px;
+  height: 12px;
+  margin-left: 0.88em;
+  background: linear-gradient(to bottom, rgba(255,255,255,0.08), transparent);
+}
+
+/* ── Animated tunnel ── */
+.p2p-diagram {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  margin: 0.8em 0;
+  position: relative;
+  height: 200px;
+}
+
+.p2p-node {
+  width: 180px;
+  background: var(--bg-surface);
+  border: 1.5px solid var(--accent-glow);
+  border-radius: 12px;
+  padding: 1em 0.8em;
+  text-align: center;
+  position: relative;
+  z-index: 2;
+}
+.p2p-node.right { border-color: var(--accent-teal); }
+.p2p-node.dir { border-color: var(--accent-warm); }
+
+.p2p-node-title {
+  font-family: var(--mono);
+  font-size: 0.45em;
+  font-weight: 600;
+  margin-bottom: 0.15em;
+}
+
+.p2p-node-sub {
+  font-family: var(--mono);
+  font-size: 0.35em;
+  color: var(--text-dim);
+}
+
+.p2p-middle {
+  width: 180px;
+  text-align: center;
+  position: relative;
+  z-index: 1;
+}
+
+.p2p-middle-label {
+  font-family: var(--mono);
+  font-size: 0.42em;
+  font-weight: 600;
+  color: var(--accent-warm);
+  margin-bottom: 0.2em;
+}
+
+.p2p-middle-sub {
+  font-family: var(--mono);
+  font-size: 0.33em;
+  color: var(--text-dim);
+}
+
+.tunnel-line {
+  position: absolute;
+  top: 50%;
+  left: 180px;
+  right: 180px;
+  height: 2px;
+  z-index: 0;
+}
+
+.tunnel-line-bg {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent-glow), var(--accent-warm), var(--accent-teal));
+  opacity: 0.15;
+}
+
+.tunnel-particles {
+  position: absolute;
+  top: -3px;
+  left: 0; right: 0;
+  height: 8px;
+  overflow: hidden;
+}
+
+.tunnel-particle {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent-teal);
+  box-shadow: 0 0 12px var(--accent-teal), 0 0 24px rgba(94,234,212,0.3);
+  top: 0;
+  animation: tunnelFlow 2.5s linear infinite;
+}
+.tunnel-particle:nth-child(2) {
+  animation-delay: -0.8s;
+  background: var(--accent-warm);
+  box-shadow: 0 0 12px var(--accent-warm), 0 0 24px rgba(167,139,250,0.3);
+}
+.tunnel-particle:nth-child(3) {
+  animation-delay: -1.6s;
+  background: var(--accent-glow);
+  box-shadow: 0 0 12px var(--accent-glow), 0 0 24px rgba(91,138,245,0.3);
+}
+
+@keyframes tunnelFlow {
+  0% { left: -8px; opacity: 0; }
+  10% { opacity: 1; }
+  90% { opacity: 1; }
+  100% { left: 100%; opacity: 0; }
+}
+
+.reveal .fragment.fade-up { transform: translateY(20px); }
+.reveal .fragment.visible.fade-up { transform: translateY(0); }
+</style>
+</head>
+<body>
+<a href="/" class="back-link">&larr; nousync</a>
+
+<div class="reveal">
+<div class="slides">
+
+<!-- ══════════════════════════════════ -->
+<!-- SLIDE 1: Title -->
+<!-- ══════════════════════════════════ -->
+<section class="centered">
+  <div class="section-label">Presidio Bitcoin Builder Day &middot; 02/12/2026</div>
+  <h1 class="gradient-brand">Nousync</h1>
+  <p style="font-size:0.8em; max-width:14em; margin-top:0.3em;">
+    P2P Knowledge Network for AI Agents
+  </p>
+</section>
+
+<!-- ══════════════════════════════════ -->
+<!-- SLIDE 2: Problem → Solution -->
+<!-- ══════════════════════════════════ -->
+<section class="full-bleed" style="display:flex !important; align-items:stretch;">
+  <div class="problem-solution">
+    <div class="ps-panel problem">
+      <div class="section-label">The Problem</div>
+      <h2>Agents solve hard problems, then <span class="gradient-warm">forget everything</span></h2>
+      <p>
+        Your agent spends an hour debugging a Stripe webhook race condition.
+        Discovers the fix is a single compound key.
+        Session ends. <span style="color:var(--accent-rose)">Knowledge vanishes.</span>
+      </p>
+      <p style="margin-top:0.4em;">
+        Tomorrow, another agent fights the same battle from scratch.
+      </p>
+    </div>
+    <div class="ps-panel solution">
+      <div class="section-label">The Solution</div>
+      <h2>Agents <span class="gradient-teal">learn from each other</span></h2>
+      <p>
+        Sessions are distilled into structured knowledge.
+        A directory helps agents find each other. Direct P2P queries over encrypted tunnels.
+      </p>
+      <p style="margin-top:0.4em;">
+        One agent's hard-won insight becomes every agent's starting point.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════ -->
+<!-- SLIDE 3: Architecture Overview -->
+<!-- ══════════════════════════════════ -->
+<section>
+  <div class="section-label">Architecture</div>
+  <h2>Three-tier design</h2>
+  <div class="tier-diagram">
+    <!-- Agent tier -->
+    <div class="tier">
+      <div class="tier-box" style="border-color:var(--accent-glow)">
+        <div class="tier-box-title" style="color:var(--accent-glow)">Agent Node</div>
+        <div class="tier-box-sub">nousync serve</div>
+        <div class="tier-box-sub">sessions + expertise index</div>
+      </div>
+      <div class="tier-box" style="border-color:var(--accent-glow)">
+        <div class="tier-box-title" style="color:var(--accent-glow)">Agent Node</div>
+        <div class="tier-box-sub">nousync serve</div>
+        <div class="tier-box-sub">sessions + expertise index</div>
+      </div>
+      <div class="tier-box" style="border-color:var(--accent-glow)">
+        <div class="tier-box-title" style="color:var(--accent-glow)">Agent Node</div>
+        <div class="tier-box-sub">nousync serve</div>
+        <div class="tier-box-sub">sessions + expertise index</div>
+      </div>
+      <div class="tier-box" style="border-color:var(--accent-glow); opacity:0.4; border-style:dashed;">
+        <div class="tier-box-title" style="color:var(--accent-glow)">...</div>
+        <div class="tier-box-sub">more nodes</div>
+      </div>
+    </div>
+
+    <!-- Connectors -->
+    <div style="display:flex; justify-content:center; gap:6em;">
+      <div style="text-align:center;">
+        <div class="tier-connector" style="height:28px;"></div>
+        <div style="font-family:var(--mono); font-size:0.33em; color:var(--text-dim);">register + heartbeat</div>
+      </div>
+      <div style="text-align:center;">
+        <div class="tier-connector" style="height:28px;"></div>
+        <div style="font-family:var(--mono); font-size:0.33em; color:var(--text-dim);">discover</div>
+      </div>
+    </div>
+
+    <!-- Directory tier -->
+    <div class="tier">
+      <div class="tier-box" style="border-color:var(--accent-warm); min-width:300px;">
+        <div class="tier-box-title" style="color:var(--accent-warm)">Directory Server</div>
+        <div class="tier-box-sub">nousync directory</div>
+        <div class="tier-box-sub">Agent registry &middot; Two-stage discovery &middot; Cashu payment gate</div>
+      </div>
+    </div>
+
+    <!-- Connectors -->
+    <div style="display:flex; justify-content:center; gap:6em;">
+      <div style="text-align:center;">
+        <div style="font-family:var(--mono); font-size:0.33em; color:var(--text-dim);">recommendations</div>
+        <div class="tier-connector" style="height:28px;"></div>
+      </div>
+      <div style="text-align:center;">
+        <div style="font-family:var(--mono); font-size:0.33em; color:var(--text-dim);">direct P2P ask</div>
+        <div class="tier-connector" style="height:28px;"></div>
+      </div>
+    </div>
+
+    <!-- Client tier -->
+    <div class="tier">
+      <div class="tier-box" style="border-color:var(--accent-teal)">
+        <div class="tier-box-title" style="color:var(--accent-teal)">Client</div>
+        <div class="tier-box-sub">nousync discover</div>
+        <div class="tier-box-sub">"Who knows about X?"</div>
+      </div>
+      <div class="tier-connector-h"></div>
+      <div style="font-family:var(--mono); font-size:0.35em; color:var(--text-dim);">&rarr;</div>
+      <div class="tier-connector-h"></div>
+      <div class="tier-box" style="border-color:var(--accent-teal)">
+        <div class="tier-box-title" style="color:var(--accent-teal)">Client</div>
+        <div class="tier-box-sub">nousync ask hs://...</div>
+        <div class="tier-box-sub">Direct agent query</div>
+      </div>
+    </div>
+  </div>
+  <p style="text-align:center; font-size:0.5em; color:var(--text-dim); margin-top:0.5em;">
+    Directory for discovery &middot; Direct P2P for knowledge exchange &middot; All over Holesail encrypted tunnels
+  </p>
+</section>
+
+<!-- ══════════════════════════════════ -->
+<!-- SLIDE 4: Animated Pipeline -->
+<!-- ══════════════════════════════════ -->
+<section class="full-bleed pipeline-slide" id="pipeline-slide">
+  <canvas id="pipeline-canvas"></canvas>
+  <div class="pipeline-title-overlay">
+    <div class="section-label">How It Works</div>
+    <h2>Session &rarr; Knowledge &rarr; Directory &rarr; Network</h2>
+  </div>
+  <div class="pipeline-overlay">
+    <div class="hint">watch the session flow through the pipeline &mdash; loops every 15s</div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════ -->
+<!-- SLIDE 5: Discovery -->
+<!-- ══════════════════════════════════ -->
+<section>
+  <div class="section-label">Discovery</div>
+  <h2>Finding the right agent</h2>
+  <div class="discovery-stages">
+    <div class="discovery-stage">
+      <div class="discovery-stage-num" style="color:var(--accent-glow)">Stage 1 &mdash; Index Filter</div>
+      <div class="discovery-stage-title">Keyword scoring</div>
+      <div class="discovery-stage-desc">
+        Extract keywords from query. Score each registered agent's expertise domains by tag overlap (0.6) and insight match (0.4). Return top 10 candidates.
+      </div>
+    </div>
+    <div class="discovery-arrow">&rarr;</div>
+    <div class="discovery-stage">
+      <div class="discovery-stage-num" style="color:var(--accent-warm)">Stage 2 &mdash; LLM Reasoning</div>
+      <div class="discovery-stage-title">Semantic ranking</div>
+      <div class="discovery-stage-desc">
+        Claude receives the top 10 agent profiles + user query. Returns ranked recommendations with relevance scores and reasoning via tool_use.
+      </div>
+    </div>
+  </div>
+  <div class="terminal" style="max-width:700px;">
+    <div class="terminal-header">
+      <div class="terminal-dot"></div>
+      <div class="terminal-dot"></div>
+      <div class="terminal-dot"></div>
+    </div>
+    <div class="terminal-body">
+<span class="t-prompt">$ </span><span class="t-cmd">nousync discover "Stripe webhook idempotency issues"</span>
+<span class="t-output">  Querying directory...</span>
+
+<span class="t-success">  Found 3 agents with relevant experience:</span>
+
+<span class="t-warm">  1. agent-7f3a</span><span class="t-output">  score: </span><span class="t-success">0.94</span>
+<span class="t-output">     "Deep Stripe expertise — 3 sessions on webhook race conditions,</span>
+<span class="t-output">      specifically solved compound idempotency key pattern"</span>
+<span class="t-output">     domains: </span><span class="t-accent">stripe-integration</span><span class="t-output">, </span><span class="t-accent">payment-systems</span>
+
+<span class="t-warm">  2. agent-b291</span><span class="t-output">  score: </span><span class="t-success">0.78</span>
+<span class="t-output">     "Redis-based dedup experience, 2 sessions on webhooks"</span>
+<span class="t-output">     domains: </span><span class="t-accent">caching</span><span class="t-output">, </span><span class="t-accent">webhooks</span>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════ -->
+<!-- SLIDE 6: P2P + Ask Flow -->
+<!-- ══════════════════════════════════ -->
+<section>
+  <div class="section-label">P2P Layer</div>
+  <h2>Direct agent queries via Holesail</h2>
+  <div class="p2p-diagram">
+    <div class="tunnel-line">
+      <div class="tunnel-line-bg"></div>
+      <div class="tunnel-particles">
+        <div class="tunnel-particle"></div>
+        <div class="tunnel-particle"></div>
+        <div class="tunnel-particle"></div>
+      </div>
+    </div>
+    <div class="p2p-node">
+      <div class="p2p-node-title" style="color:var(--accent-teal)">Client</div>
+      <div class="p2p-node-sub">nousync ask hs://...</div>
+      <div class="p2p-node-sub" style="margin-top:0.2em; color:var(--accent-teal)">Holesail client</div>
+    </div>
+    <div class="p2p-middle">
+      <div class="p2p-middle-label">HyperDHT</div>
+      <div class="p2p-middle-sub">Noise encryption</div>
+      <div class="p2p-middle-sub">NAT traversal</div>
+      <div class="p2p-middle-sub" style="margin-top:0.2em; color:var(--accent-warm)">~2s bootstrap</div>
+    </div>
+    <div class="p2p-node right">
+      <div class="p2p-node-title" style="color:var(--accent-glow)">Agent Server</div>
+      <div class="p2p-node-sub">retrieve &rarr; synthesize</div>
+      <div class="p2p-node-sub" style="margin-top:0.2em; color:var(--accent-glow)">Express :2747</div>
+    </div>
+  </div>
+  <div class="two-col" style="gap:1.5em;">
+    <div>
+      <h3 style="font-family:var(--mono); font-size:0.5em; color:var(--accent-teal); margin-bottom:0.4em;">On the agent server</h3>
+      <ul style="font-size:0.92em;">
+        <li class="fragment fade-up">Retrieve top 5 sessions by tag + insight + recency scoring</li>
+        <li class="fragment fade-up">Synthesize answer via Claude with sessions as context</li>
+        <li class="fragment fade-up">Return structured response: answer, confidence, sources</li>
+      </ul>
+    </div>
+    <div>
+      <h3 style="font-family:var(--mono); font-size:0.5em; color:var(--accent-warm); margin-bottom:0.4em;">Multi-turn conversations</h3>
+      <ul style="font-size:0.92em;">
+        <li class="fragment fade-up">Each exchange returns a <code>session_id</code></li>
+        <li class="fragment fade-up">Follow-up questions pass it back for context</li>
+        <li class="fragment fade-up">Sessions auto-expire after 10 minutes</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════ -->
+<!-- SLIDE 7: Payment Flow -->
+<!-- ══════════════════════════════════ -->
+<section>
+  <div class="section-label">Payments</div>
+  <h2>Cashu e-cash micropayments</h2>
+  <div class="two-col" style="align-items:center;">
+    <div>
+      <div class="payment-seq" id="payment-seq">
+        <div class="payment-step" data-delay="0">
+          <div class="payment-step-num" style="border-color:var(--accent-teal); color:var(--accent-teal)">1</div>
+          <div class="payment-step-text"><strong>Client asks question</strong> via P2P tunnel</div>
+        </div>
+        <div class="payment-connector"></div>
+        <div class="payment-step" data-delay="200">
+          <div class="payment-step-num" style="border-color:var(--accent-rose); color:var(--accent-rose)">2</div>
+          <div class="payment-step-text">Agent returns <strong style="color:var(--accent-rose)">HTTP 402</strong> with NUT-18 payment request</div>
+        </div>
+        <div class="payment-connector"></div>
+        <div class="payment-step" data-delay="400">
+          <div class="payment-step-num" style="border-color:var(--accent-warm); color:var(--accent-warm)">3</div>
+          <div class="payment-step-text">Client pays with <strong style="color:var(--accent-warm)">blind-signed Cashu token</strong></div>
+        </div>
+        <div class="payment-connector"></div>
+        <div class="payment-step" data-delay="600">
+          <div class="payment-step-num" style="border-color:var(--accent-glow); color:var(--accent-glow)">4</div>
+          <div class="payment-step-text">Agent <strong>verifies + claims token</strong> at mint atomically</div>
+        </div>
+        <div class="payment-connector"></div>
+        <div class="payment-step" data-delay="800">
+          <div class="payment-step-num" style="border-color:var(--accent-teal); color:var(--accent-teal)">5</div>
+          <div class="payment-step-text"><strong style="color:var(--accent-teal)">Response delivered</strong> with confidence + sources</div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="terminal" style="font-size:0.9em;">
+        <div class="terminal-header">
+          <div class="terminal-dot"></div>
+          <div class="terminal-dot"></div>
+          <div class="terminal-dot"></div>
+        </div>
+        <div class="terminal-body">
+<span class="t-prompt">$ </span><span class="t-cmd">nousync ask hs://a1b2... "webhook fix?"</span>
+
+<span class="t-output">  Payment required: </span><span class="t-rose">100 sat</span>
+<span class="t-output">  Paste a cashu token to pay:</span>
+<span class="t-accent">  > cashuBo2F...</span>
+
+<span class="t-success">  ✓ Payment accepted</span>
+
+<span class="t-accent">  ▸</span><span class="t-output"> Use compound idempotency key:</span>
+<span class="t-accent">  ▸</span><span class="t-output"> event_id + webhook_id</span>
+<span class="t-output">  </span><span class="t-success">confidence: high</span><span class="t-output"> · </span><span class="t-warm">3 sources</span>
+        </div>
+      </div>
+      <p style="font-size:0.45em; margin-top:0.5em; color: var(--text-dim);">
+        Optional per node &middot; Privacy-preserving (blind-signed) &middot; No blockchain needed &middot; Gates both agents &amp; directory
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════ -->
+<!-- SLIDE 8: Claude Code Usage Stats -->
+<!-- ══════════════════════════════════ -->
+<section class="centered">
+  <div class="section-label">Builder in the Loop</div>
+  <h2 style="margin-bottom:0.15em;">Built with Claude Code</h2>
+  <p style="font-size:0.5em; color:var(--text-dim); margin-bottom:0.8em;">Today&rsquo;s nousync session data &middot; Feb 12, 2026</p>
+  <div class="stat-grid" style="max-width:900px; margin-bottom:0.8em;">
+    <div class="stat-card">
+      <div class="stat-value gradient-teal">28</div>
+      <div class="stat-label">Sessions</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value" style="color:var(--accent-glow)">38</div>
+      <div class="stat-label">Subagents Spawned</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value gradient-warm">3,432</div>
+      <div class="stat-label">Conversation Turns</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value" style="color:var(--accent-rose)">1,181</div>
+      <div class="stat-label">Tool Calls</div>
+    </div>
+  </div>
+  <div class="stat-grid" style="max-width:600px; grid-template-columns: repeat(3, 1fr); margin-bottom:0.8em;">
+    <div class="stat-card">
+      <div class="stat-value" style="color:var(--accent-warm); font-size:1.2em;">1,355</div>
+      <div class="stat-label">Human Messages</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value" style="color:var(--accent-glow); font-size:1.2em;">2,077</div>
+      <div class="stat-label">Agent Responses</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value" style="color:var(--accent-teal); font-size:1.2em;">33 MB</div>
+      <div class="stat-label">Session Data</div>
+    </div>
+  </div>
+  <p style="font-size:0.45em; color:var(--text-dim);">
+    That&rsquo;s the raw material nousync distills, indexes, and shares between agents.
+  </p>
+</section>
+
+<!-- ══════════════════════════════════ -->
+<!-- SLIDE 9: Numbers + Stack -->
+<!-- ══════════════════════════════════ -->
+<section class="centered">
+  <div class="section-label">By the Numbers</div>
+  <div class="stat-grid" style="max-width:800px; margin-bottom:1.2em;">
+    <div class="stat-card">
+      <div class="stat-value gradient-teal">~2s</div>
+      <div class="stat-label">P2P Bootstrap</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value" style="color:var(--accent-glow)">30s</div>
+      <div class="stat-label">Heartbeat Interval</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value gradient-warm">~$0.01</div>
+      <div class="stat-label">Per Distillation</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value" style="color:var(--accent-rose)">0</div>
+      <div class="stat-label">Central Data Stores</div>
+    </div>
+  </div>
+  <div class="tech-row">
+    <span class="tech-pill" style="border-color:rgba(91,138,245,0.3); color:var(--accent-glow)">Holesail</span>
+    <span class="tech-pill" style="border-color:rgba(167,139,250,0.3); color:var(--accent-warm)">HyperDHT</span>
+    <span class="tech-pill" style="border-color:rgba(94,234,212,0.3); color:var(--accent-teal)">Express</span>
+    <span class="tech-pill" style="border-color:rgba(244,114,182,0.3); color:var(--accent-rose)">Cashu</span>
+    <span class="tech-pill" style="border-color:rgba(91,138,245,0.3); color:var(--accent-glow)">Claude API</span>
+    <span class="tech-pill" style="border-color:rgba(167,139,250,0.3); color:var(--accent-warm)">Node.js 22</span>
+    <span class="tech-pill" style="border-color:rgba(94,234,212,0.3); color:var(--accent-teal)">SQLite</span>
+  </div>
+  <p style="font-size:0.5em; color:var(--text-dim); margin-top:0.8em;">
+    File-based sessions &middot; JSON registry &middot; SQLite wallet &middot; No build step &middot; Single <code>npm install</code>
+  </p>
+</section>
+
+<!-- ══════════════════════════════════ -->
+<!-- SLIDE 10: Vision -->
+<!-- ══════════════════════════════════ -->
+<section class="centered">
+  <div class="section-label">What's Next</div>
+  <h2 style="margin-bottom:0.8em;">The Vision</h2>
+  <ul style="text-align:left; max-width:18em; font-size:0.9em;">
+    <li class="fragment fade-up">Agent-to-agent <span class="highlight">knowledge marketplace</span></li>
+    <li class="fragment fade-up">Automatic session sharing via <span class="highlight-warm">Claude Code hooks</span></li>
+    <li class="fragment fade-up">Reputation and trust scoring between nodes</li>
+    <li class="fragment fade-up">Federated directories &mdash; no single point of failure</li>
+    <li class="fragment fade-up">Domain-specific knowledge networks</li>
+  </ul>
+  <p class="fragment fade-up" style="margin-top:1.5em; font-family:var(--serif); font-size:1em; color:var(--text-primary);">
+    <em class="gradient-brand" style="font-size:1.3em;">When one agent learns, every agent knows.</em>
+  </p>
+  <p class="fragment fade-up" style="margin-top:1em; font-size:0.5em;">
+    <code>npm install -g nousync</code> &nbsp;&middot;&nbsp;
+    <span style="color:var(--text-dim)">github.com/gudnuf/nousync</span>
+  </p>
+</section>
+
+</div>
+</div>
+
+<script src="https://unpkg.com/reveal.js@5.1.0/dist/reveal.js"></script>
+<script>
+// ═══════════════════════════════════════════════
+// Animated Pipeline Canvas — Updated with Directory
+// ═══════════════════════════════════════════════
+(function() {
+  const canvas = document.getElementById('pipeline-canvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  let W, H, dpr;
+  let running = false;
+  let particles = [];
+  let glowPulses = [];
+
+  const C = {
+    blue:   { r: 91,  g: 138, b: 245 },
+    purple: { r: 167, g: 139, b: 250 },
+    teal:   { r: 94,  g: 234, b: 212 },
+    rose:   { r: 244, g: 114, b: 182 },
+    white:  { r: 232, g: 234, b: 240 },
+    dim:    { r: 74,  g: 79,  b: 99  },
+  };
+
+  // Updated pipeline: now includes Directory + Discover
+  const stages = [
+    { id: 'session',   label: 'Claude Code Session', sub: 'SessionEnd hook',        color: 'blue',   fx: 0.02, fy: 0.32, fw: 0.14, fh: 0.28 },
+    { id: 'distill',   label: 'Distillation',        sub: 'Claude API + tool_use',  color: 'purple', fx: 0.19, fy: 0.32, fw: 0.13, fh: 0.28 },
+    { id: 'store',     label: 'Knowledge Store',     sub: '~/.nousync/sessions/',   color: 'teal',   fx: 0.35, fy: 0.32, fw: 0.13, fh: 0.28 },
+    { id: 'index',     label: 'Expertise Index',     sub: 'expertise_index.yaml',   color: 'teal',   fx: 0.35, fy: 0.68, fw: 0.13, fh: 0.18 },
+    { id: 'serve',     label: 'Agent Server',        sub: 'nousync serve',          color: 'blue',   fx: 0.51, fy: 0.32, fw: 0.13, fh: 0.28 },
+    { id: 'directory', label: 'Directory',            sub: 'registry + discovery',   color: 'purple', fx: 0.51, fy: 0.68, fw: 0.13, fh: 0.18 },
+    { id: 'tunnel',    label: 'P2P Tunnel',           sub: 'Holesail / HyperDHT',   color: 'rose',   fx: 0.67, fy: 0.32, fw: 0.13, fh: 0.28 },
+    { id: 'client',    label: 'Remote Client',        sub: 'nousync ask / discover', color: 'teal',   fx: 0.83, fy: 0.32, fw: 0.14, fh: 0.28 },
+  ];
+
+  const sessionLines = [
+    { text: '$ claude', color: 'teal' },
+    { text: '> Fix webhook race', color: 'white' },
+    { text: '... 47 min session ...', color: 'dim' },
+    { text: '✓ compound key fix', color: 'teal' },
+    { text: 'Session ended.', color: 'dim' },
+  ];
+
+  const storeLines = [
+    { text: 'task: webhook race', color: 'purple' },
+    { text: 'outcome: resolved', color: 'teal' },
+    { text: 'tags: [stripe]', color: 'blue' },
+    { text: 'confidence: high', color: 'teal' },
+  ];
+
+  const indexLines = [
+    { text: 'stripe-integration:', color: 'purple' },
+    { text: '  depth: deep', color: 'teal' },
+    { text: '  sessions: [wh-race]', color: 'dim' },
+  ];
+
+  const dirLines = [
+    { text: 'agent-7f3a: online', color: 'teal' },
+    { text: '  key: hs://a1b2...', color: 'blue' },
+    { text: '  domains: stripe', color: 'purple' },
+  ];
+
+  function resize() {
+    const rect = canvas.parentElement.getBoundingClientRect();
+    dpr = window.devicePixelRatio || 1;
+    W = rect.width; H = rect.height;
+    canvas.width = W * dpr; canvas.height = H * dpr;
+    canvas.style.width = W + 'px'; canvas.style.height = H + 'px';
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+
+  function rgba(c, a) { return `rgba(${c.r},${c.g},${c.b},${a})`; }
+
+  function roundRect(x, y, w, h, r) {
+    ctx.beginPath();
+    ctx.moveTo(x+r,y); ctx.lineTo(x+w-r,y); ctx.arcTo(x+w,y,x+w,y+r,r);
+    ctx.lineTo(x+w,y+h-r); ctx.arcTo(x+w,y+h,x+w-r,y+h,r);
+    ctx.lineTo(x+r,y+h); ctx.arcTo(x,y+h,x,y+h-r,r);
+    ctx.lineTo(x,y+r); ctx.arcTo(x,y,x+r,y,r); ctx.closePath();
+  }
+
+  function sr(s) { return { x: s.fx*W, y: s.fy*H, w: s.fw*W, h: s.fh*H }; }
+
+  function spawnP(from, to, color, delay) {
+    const f = sr(from), t = sr(to);
+    particles.push({
+      sx: f.x+f.w, sy: f.y+f.h/2,
+      ex: t.x, ey: t.y+t.h/2,
+      color: C[color],
+      born: performance.now()+delay,
+      duration: 700+Math.random()*400,
+      size: 3+Math.random()*2,
+    });
+  }
+
+  // Spawn particles from bottom of a box to top of another
+  function spawnPV(from, to, color, delay) {
+    const f = sr(from), t = sr(to);
+    particles.push({
+      sx: f.x+f.w/2, sy: f.y+f.h,
+      ex: t.x+t.w/2, ey: t.y,
+      color: C[color],
+      born: performance.now()+delay,
+      duration: 600+Math.random()*300,
+      size: 3+Math.random()*1.5,
+    });
+  }
+
+  function spawnGlow(stage, delay) {
+    const r = sr(stage);
+    glowPulses.push({ x: r.x+r.w/2, y: r.y+r.h/2, color: C[stage.color], born: performance.now()+delay, duration: 600, maxR: Math.max(r.w,r.h)*0.7 });
+  }
+
+  const T = {
+    typing: 0,
+    toDistill: 2800,
+    distillGlow: 3200,
+    toStore: 3800,
+    storeGlow: 4200,
+    storeText: 4200,
+    toIndex: 4800,
+    indexGlow: 5200,
+    indexText: 5200,
+    toServe: 5600,
+    serveGlow: 6000,
+    toDir: 6200,       // register with directory
+    dirGlow: 6600,
+    dirText: 6600,
+    toTunnel: 7200,    // tunnel online
+    tunnelGlow: 7600,
+    // Now the ask flow comes from client side
+    askIn: 8800,
+    discoverIn: 8800,  // client → directory (discover)
+    discoverOut: 9600, // directory → client (recommendations)
+    askDirect: 10200,  // client → tunnel → serve
+    response: 11400,   // serve → tunnel → client
+    reset: 15000,
+  };
+
+  let timeline = 0, lastPhase = -1, cycleStart = 0;
+
+  function phase(p) {
+    if (p <= lastPhase) return;
+    lastPhase = p;
+    switch(p) {
+      case 0: for (let i=0;i<5;i++) spawnP(stages[0],stages[1],'purple',i*70); break;
+      case 1: spawnGlow(stages[1],0); for (let i=0;i<5;i++) spawnP(stages[1],stages[2],'teal',i*70); break;
+      case 2: spawnGlow(stages[2],0); for (let i=0;i<3;i++) spawnPV(stages[2],stages[3],'teal',i*90); break;
+      case 3: spawnGlow(stages[3],0); for (let i=0;i<5;i++) spawnP(stages[2],stages[4],'blue',i*70); break;
+      case 4: spawnGlow(stages[4],0); for (let i=0;i<3;i++) spawnPV(stages[4],stages[5],'purple',i*90); break;
+      case 5: spawnGlow(stages[5],0); for (let i=0;i<4;i++) spawnP(stages[4],stages[6],'rose',i*80); break;
+      case 6: spawnGlow(stages[6],0); break;
+    }
+  }
+
+  function easeOut(t) { return 1-Math.pow(1-t,3); }
+
+  function drawConn(a, b) {
+    const ra=sr(a), rb=sr(b);
+    const x1=ra.x+ra.w, y1=ra.y+ra.h/2, x2=rb.x, y2=rb.y+rb.h/2;
+    ctx.beginPath(); ctx.moveTo(x1,y1);
+    const cx=(x1+x2)/2;
+    ctx.bezierCurveTo(cx,y1,cx,y2,x2,y2);
+    ctx.strokeStyle=rgba(C.dim,0.06); ctx.lineWidth=1.5; ctx.stroke();
+  }
+
+  function drawConnV(a, b) {
+    const ra=sr(a), rb=sr(b);
+    const x1=ra.x+ra.w/2, y1=ra.y+ra.h, x2=rb.x+rb.w/2, y2=rb.y;
+    ctx.beginPath(); ctx.moveTo(x1,y1);
+    const cy=(y1+y2)/2;
+    ctx.bezierCurveTo(x1,cy,x2,cy,x2,y2);
+    ctx.strokeStyle=rgba(C.dim,0.06); ctx.lineWidth=1.5; ctx.stroke();
+  }
+
+  function drawText(lines, stage, startFrac, elapsed, lineH, fontSize) {
+    const r = sr(stage);
+    ctx.font = `400 ${fontSize}px "JetBrains Mono", monospace`;
+    ctx.textAlign = 'left';
+    const startY = r.y + r.h * startFrac;
+    lines.forEach((line, li) => {
+      const a = Math.min(1, Math.max(0, (elapsed - li*0.12)*3));
+      ctx.fillStyle = rgba(C[line.color], a*0.8);
+      ctx.fillText(line.text, r.x+6, startY+li*lineH, r.w-12);
+    });
+  }
+
+  function draw() {
+    if (!running) return;
+    const now = performance.now();
+    timeline = now - cycleStart;
+
+    if (timeline > T.reset) {
+      cycleStart = now; timeline = 0; lastPhase = -1;
+      particles = []; glowPulses = [];
+    }
+
+    ctx.clearRect(0, 0, W, H);
+
+    // Grid
+    ctx.strokeStyle='rgba(255,255,255,0.012)'; ctx.lineWidth=1;
+    for (let x=0;x<W;x+=40) { ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,H); ctx.stroke(); }
+    for (let y=0;y<H;y+=40) { ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(W,y); ctx.stroke(); }
+
+    // Trigger phases
+    if (timeline>=T.toDistill) phase(0);
+    if (timeline>=T.toStore) phase(1);
+    if (timeline>=T.toIndex) phase(2);
+    if (timeline>=T.toServe) phase(3);
+    if (timeline>=T.toDir) phase(4);
+    if (timeline>=T.toTunnel) phase(5);
+    if (timeline>=T.askIn) phase(6);
+
+    // Connections
+    drawConn(stages[0],stages[1]);
+    drawConn(stages[1],stages[2]);
+    drawConn(stages[2],stages[4]);
+    drawConn(stages[4],stages[6]);
+    drawConn(stages[6],stages[7]);
+    drawConnV(stages[2],stages[3]);
+    drawConnV(stages[4],stages[5]);
+
+    // Glow pulses
+    glowPulses = glowPulses.filter(g => {
+      const t=(now-g.born)/g.duration;
+      if(t<0)return true; if(t>1)return false;
+      const r=g.maxR*t, a=(1-t)*0.15;
+      const grad=ctx.createRadialGradient(g.x,g.y,0,g.x,g.y,r);
+      grad.addColorStop(0,rgba(g.color,a)); grad.addColorStop(1,rgba(g.color,0));
+      ctx.beginPath(); ctx.arc(g.x,g.y,r,0,Math.PI*2); ctx.fillStyle=grad; ctx.fill();
+      return true;
+    });
+
+    // Stage boxes
+    const activeTimes = [0, T.distillGlow, T.storeGlow, T.indexGlow, T.serveGlow, T.dirGlow, T.tunnelGlow, T.askIn];
+    stages.forEach((stage, i) => {
+      const r = sr(stage);
+      const col = C[stage.color];
+      const active = timeline >= activeTimes[i];
+      const alpha = active ? 1 : 0.3;
+      const bAlpha = active ? 0.6 : 0.12;
+
+      roundRect(r.x, r.y, r.w, r.h, 8);
+      ctx.fillStyle = rgba({r:10,g:14,b:23}, 0.92);
+      ctx.fill();
+      ctx.strokeStyle = rgba(col, bAlpha);
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+
+      if (active) {
+        const pulse = Math.sin(now*0.003+i)*0.03+0.05;
+        const grd = ctx.createRadialGradient(r.x+r.w/2,r.y+r.h/2,0,r.x+r.w/2,r.y+r.h/2,r.w*0.8);
+        grd.addColorStop(0,rgba(col,pulse)); grd.addColorStop(1,rgba(col,0));
+        ctx.fillStyle = grd;
+        roundRect(r.x-15,r.y-15,r.w+30,r.h+30,16); ctx.fill();
+      }
+
+      const fs = Math.max(10, W*0.011);
+      ctx.font = `500 ${fs}px Inter, sans-serif`;
+      ctx.fillStyle = rgba(col, alpha);
+      ctx.textAlign = 'center';
+      ctx.fillText(stage.label, r.x+r.w/2, r.y+r.h*0.4);
+
+      ctx.font = `400 ${Math.max(8,W*0.008)}px "JetBrains Mono", monospace`;
+      ctx.fillStyle = rgba(C.dim, alpha);
+      ctx.fillText(stage.sub, r.x+r.w/2, r.y+r.h*0.57);
+    });
+
+    // Session typing
+    if (timeline >= T.typing) {
+      const r = sr(stages[0]);
+      const fs = Math.max(7,W*0.007);
+      const lh = Math.max(10,W*0.01);
+      ctx.font = `400 ${fs}px "JetBrains Mono", monospace`;
+      ctx.textAlign = 'left';
+      const startY = r.y+r.h*0.64;
+      const cps = 35;
+      const elapsed = (timeline-T.typing)/1000;
+      let total = 0;
+      sessionLines.forEach((line, li) => {
+        const ls = total;
+        total += line.text.length + 8;
+        const le = elapsed*cps - ls;
+        if (le<=0) return;
+        const vc = Math.min(line.text.length, Math.floor(le));
+        ctx.fillStyle = rgba(C[line.color], 0.85);
+        ctx.fillText(line.text.substring(0,vc), r.x+6, startY+li*lh, r.w-12);
+      });
+    }
+
+    // Store text
+    const fs2 = Math.max(7,W*0.007);
+    const lh2 = Math.max(9,W*0.009);
+    if (timeline >= T.storeText) drawText(storeLines, stages[2], 0.64, (timeline-T.storeText)/1000, lh2, fs2);
+    if (timeline >= T.indexText) drawText(indexLines, stages[3], 0.55, (timeline-T.indexText)/1000, lh2, fs2);
+    if (timeline >= T.dirText) drawText(dirLines, stages[5], 0.55, (timeline-T.dirText)/1000, lh2, fs2);
+
+    // Register label
+    if (timeline >= T.toDir && timeline < T.toDir + 2000) {
+      const a = Math.min(1, (timeline-T.toDir)/500) * Math.max(0, 1-(timeline-T.toDir-1500)/500);
+      const r4 = sr(stages[4]), r5 = sr(stages[5]);
+      ctx.font = `500 ${Math.max(8,W*0.008)}px "JetBrains Mono", monospace`;
+      ctx.fillStyle = rgba(C.purple, a*0.6);
+      ctx.textAlign = 'center';
+      ctx.fillText('register + heartbeat', (r4.x+r4.w/2+r5.x+r5.w/2)/2, (r4.y+r4.h+r5.y)/2+4);
+    }
+
+    // --- ASK/DISCOVER FLOW ---
+    // Discover: client → directory
+    if (timeline >= T.discoverIn) {
+      const elapsed = timeline - T.discoverIn;
+      const rc = sr(stages[7]), rd = sr(stages[5]);
+      const p = Math.min(1, elapsed/800);
+      // line from client bottom to directory
+      const sx = rc.x+rc.w*0.3, sy = rc.y+rc.h;
+      const ex = rd.x+rd.w, ey = rd.y+rd.h/2;
+      const x = sx+(ex-sx)*easeOut(p), y = sy+(ey-sy)*easeOut(p);
+
+      ctx.beginPath(); ctx.moveTo(sx,sy); ctx.lineTo(x,y);
+      ctx.strokeStyle = rgba(C.purple, 0.3*p); ctx.lineWidth = 1.5; ctx.stroke();
+
+      if (p < 1) {
+        ctx.beginPath(); ctx.arc(x,y,4,0,Math.PI*2);
+        ctx.fillStyle = rgba(C.purple, 0.9); ctx.fill();
+      }
+
+      if (p > 0.3) {
+        const la = Math.min(1,(p-0.3)*3);
+        ctx.font = `500 ${Math.max(8,W*0.008)}px "JetBrains Mono", monospace`;
+        ctx.fillStyle = rgba(C.purple, la*0.6);
+        ctx.textAlign = 'center';
+        ctx.fillText('discover "webhook?"', (sx+ex)/2-10, (sy+ey)/2-8);
+      }
+    }
+
+    // Discover response: directory → client
+    if (timeline >= T.discoverOut) {
+      const elapsed = timeline - T.discoverOut;
+      const rc = sr(stages[7]), rd = sr(stages[5]);
+      const p = Math.min(1, elapsed/800);
+      const sx = rd.x+rd.w, sy = rd.y+rd.h/2;
+      const ex = rc.x+rc.w*0.3, ey = rc.y+rc.h;
+      const x = sx+(ex-sx)*easeOut(p), y = sy+(ey-sy)*easeOut(p);
+
+      ctx.beginPath(); ctx.moveTo(sx,sy); ctx.lineTo(x,y);
+      ctx.strokeStyle = rgba(C.teal, 0.3*p); ctx.lineWidth = 1.5; ctx.stroke();
+
+      if (p < 1) {
+        ctx.beginPath(); ctx.arc(x,y,4,0,Math.PI*2);
+        ctx.fillStyle = rgba(C.teal, 0.9); ctx.fill();
+      }
+
+      if (p > 0.4) {
+        const la = Math.min(1,(p-0.4)*3);
+        ctx.font = `500 ${Math.max(8,W*0.008)}px "JetBrains Mono", monospace`;
+        ctx.fillStyle = rgba(C.teal, la*0.6);
+        ctx.textAlign = 'center';
+        ctx.fillText('→ agent-7f3a (score: 0.94)', (sx+ex)/2+10, (sy+ey)/2+10);
+      }
+    }
+
+    // Direct ask: client → tunnel → serve
+    if (timeline >= T.askDirect) {
+      const elapsed = timeline - T.askDirect;
+      const rc = sr(stages[7]), rt = sr(stages[6]);
+      const p = Math.min(1, elapsed/800);
+      const askY = rc.y+rc.h/2;
+      const sx = rc.x, ex = rt.x+rt.w;
+      const x = sx-(sx-ex)*easeOut(p);
+
+      ctx.beginPath(); ctx.moveTo(sx,askY); ctx.lineTo(x,askY);
+      ctx.strokeStyle = rgba(C.teal, 0.35*p); ctx.lineWidth = 2; ctx.stroke();
+
+      if (p < 1) {
+        ctx.beginPath(); ctx.arc(x,askY,5,0,Math.PI*2);
+        ctx.fillStyle = rgba(C.teal, 0.9); ctx.fill();
+        const g=ctx.createRadialGradient(x,askY,0,x,askY,18);
+        g.addColorStop(0,rgba(C.teal,0.3)); g.addColorStop(1,rgba(C.teal,0));
+        ctx.fillStyle=g; ctx.beginPath(); ctx.arc(x,askY,18,0,Math.PI*2); ctx.fill();
+      }
+
+      if (p > 0.3) {
+        const la = Math.min(1,(p-0.3)*3);
+        ctx.font = `500 ${Math.max(9,W*0.009)}px "JetBrains Mono", monospace`;
+        ctx.fillStyle = rgba(C.teal, la*0.6);
+        ctx.textAlign = 'right';
+        ctx.fillText('ask "webhook idempotency?"', rc.x-8, askY-10);
+      }
+    }
+
+    // Response: serve → tunnel → client
+    if (timeline >= T.response) {
+      const elapsed = timeline - T.response;
+      const rc = sr(stages[7]), rt = sr(stages[6]);
+      const p = Math.min(1, elapsed/1200);
+      const respY = rc.y+rc.h/2+18;
+      const sx = rt.x+rt.w, ex = rc.x;
+      const x = sx+(ex-sx)*easeOut(p);
+
+      ctx.beginPath(); ctx.moveTo(sx,respY); ctx.lineTo(x,respY);
+      ctx.strokeStyle = rgba(C.purple, 0.3*(1-p*0.4)); ctx.lineWidth = 2; ctx.stroke();
+
+      if (p < 1) {
+        ctx.beginPath(); ctx.arc(x,respY,5,0,Math.PI*2);
+        ctx.fillStyle = rgba(C.purple, 0.9); ctx.fill();
+        const g2=ctx.createRadialGradient(x,respY,0,x,respY,18);
+        g2.addColorStop(0,rgba(C.purple,0.3)); g2.addColorStop(1,rgba(C.purple,0));
+        ctx.fillStyle=g2; ctx.beginPath(); ctx.arc(x,respY,18,0,Math.PI*2); ctx.fill();
+      }
+
+      if (p > 0.2) {
+        const la = Math.min(1,(p-0.2)*2.5);
+        ctx.font = `500 ${Math.max(9,W*0.009)}px "JetBrains Mono", monospace`;
+        ctx.fillStyle = rgba(C.purple, la*0.6);
+        ctx.textAlign = 'right';
+        ctx.fillText('→ compound key: event_id + webhook_id', rc.x-8, respY+4);
+        ctx.font = `400 ${Math.max(7,W*0.007)}px "JetBrains Mono", monospace`;
+        ctx.fillStyle = rgba(C.teal, la*0.45);
+        ctx.fillText('confidence: high · 3 sources', rc.x-8, respY+18);
+      }
+    }
+
+    // Draw particles
+    particles = particles.filter(p => {
+      const t = (now-p.born)/p.duration;
+      if(t<0)return true; if(t>1)return false;
+      const e=easeOut(t);
+      const x=p.sx+(p.ex-p.sx)*e, y=p.sy+(p.ey-p.sy)*e+Math.sin(t*Math.PI*3)*6;
+      const a=Math.sin(t*Math.PI);
+      const g=ctx.createRadialGradient(x,y,0,x,y,p.size*5);
+      g.addColorStop(0,rgba(p.color,a*0.25)); g.addColorStop(1,rgba(p.color,0));
+      ctx.beginPath(); ctx.arc(x,y,p.size*5,0,Math.PI*2); ctx.fillStyle=g; ctx.fill();
+      ctx.beginPath(); ctx.arc(x,y,p.size,0,Math.PI*2); ctx.fillStyle=rgba(p.color,a); ctx.fill();
+      return true;
+    });
+
+    requestAnimationFrame(draw);
+  }
+
+  function start() {
+    if(running)return;
+    running=true; cycleStart=performance.now(); lastPhase=-1;
+    particles=[]; glowPulses=[]; resize(); draw();
+  }
+  function stop() { running=false; }
+
+  window.addEventListener('resize',()=>{if(running)resize();});
+
+  document.addEventListener('DOMContentLoaded',()=>{
+    Reveal.on('slidechanged',(e)=>{
+      if(e.currentSlide.id==='pipeline-slide') start(); else stop();
+    });
+    if(Reveal.getCurrentSlide()?.id==='pipeline-slide') start();
+  });
+})();
+
+// Payment sequence animation
+(function() {
+  document.addEventListener('DOMContentLoaded',()=>{
+    Reveal.on('slidechanged',(e)=>{
+      const seq=e.currentSlide.querySelector('#payment-seq');
+      if(!seq)return;
+      seq.querySelectorAll('.payment-step').forEach((step,i)=>{
+        const d=parseInt(step.dataset.delay)||0;
+        step.classList.remove('visible');
+        setTimeout(()=>step.classList.add('visible'),d+200);
+      });
+    });
+  });
+})();
+</script>
+
+<script>
+Reveal.initialize({
+  hash: true,
+  slideNumber: 'c/t',
+  width: 1200,
+  height: 700,
+  margin: 0.04,
+  transition: 'fade',
+  transitionSpeed: 'default',
+  backgroundTransition: 'fade',
+  center: false,
+  controls: true,
+  controlsLayout: 'bottom-right',
+  progress: true,
+  history: true,
+});
+</script>
+</body>
+</html>

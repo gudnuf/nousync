@@ -1,15 +1,4 @@
-import { createServer } from 'node:net';
-import Holesail from 'holesail';
-
-function findFreePort() {
-  return new Promise((resolve, reject) => {
-    const srv = createServer();
-    srv.listen(0, '127.0.0.1', () => {
-      const { port } = srv.address();
-      srv.close((err) => (err ? reject(err) : resolve(port)));
-    });
-  });
-}
+import { findFreePort, connectHolesail } from '../core/network.js';
 
 export class AgentClient {
   constructor(url, { timeout = 10_000 } = {}) {
@@ -23,19 +12,7 @@ export class AgentClient {
 
   async connect() {
     this.localPort = await findFreePort();
-
-    this.holesail = new Holesail({
-      client: true,
-      key: this.url,
-      port: this.localPort,
-      host: '127.0.0.1',
-    });
-
-    await this.holesail.ready();
-
-    // Stabilization delay from PoC findings
-    await new Promise(r => setTimeout(r, 500));
-
+    this.holesail = await connectHolesail(this.url, this.localPort);
     this.connected = true;
   }
 

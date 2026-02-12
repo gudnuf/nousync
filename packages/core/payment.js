@@ -25,10 +25,10 @@ export function encodePaymentRequest(amount, unit, mints) {
   return 'creqA' + b64;
 }
 
-export function createPaymentMiddleware(wallet, config) {
+export function createPaymentMiddleware(wallet, config, { gatePaths = ['/ask'] } = {}) {
   return async (req, res, next) => {
     if (!config.payment?.enabled) return next();
-    if (req.method !== 'POST' || req.path !== '/ask') return next();
+    if (!gatePaths.some(p => req.method === 'POST' && req.path === p)) return next();
 
     const token = req.headers['x-cashu'];
 

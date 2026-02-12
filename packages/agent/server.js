@@ -4,7 +4,7 @@ import yaml from 'js-yaml';
 import { retrieveRelevantSessions } from '../core/retrieval.js';
 import { synthesize } from './synthesizer.js';
 import { createSessionStore } from './sessions.js';
-import { createPaymentMiddleware } from './payment.js';
+import { createPaymentMiddleware } from '../core/payment.js';
 
 export function createAgentServer({ agentId, displayName, sessionsDir, indexPath, client, model, wallet, config }) {
   const app = express();

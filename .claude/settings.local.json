@@ -4,7 +4,28 @@
       "Bash(wc:*)",
       "Bash(python3:*)",
       "Bash(ls:*)",
-      "Bash(node -e:*)"
+      "Bash(node -e:*)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "WebSearch",
+      "WebFetch(domain:cashubtc.github.io)",
+      "WebFetch(domain:cashu-ts.dev)",
+      "WebFetch(domain:www.npmjs.com)",
+      "Bash(curl:*)",
+      "Bash(npm info:*)",
+      "Bash(npm view:*)",
+      "Bash(npm search:*)",
+      "Bash(gh api:*)",
+      "WebFetch(domain:holesail.io)",
+      "WebFetch(domain:docs.holesail.io)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Bash(npm install:*)",
+      "Bash(gh search:*)",
+      "WebFetch(domain:docs.routstr.com)",
+      "WebFetch(domain:blog.cashu.space)",
+      "Bash(git mv:*)"
     ]
   }
 }

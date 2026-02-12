@@ -16,14 +16,14 @@ const STOPWORDS = new Set([
   'every', 'any', 'some', 'about', 'up', 'out', 'just', 'also', 'very',
 ]);
 
-function extractKeywords(text) {
+export function extractKeywords(text) {
   return text
     .split(/\W+/)
     .map(w => w.toLowerCase())
     .filter(w => w.length > 1 && !STOPWORDS.has(w));
 }
 
-function scoreTagOverlap(keywords, tags) {
+export function scoreTagOverlap(keywords, tags) {
   if (!tags || tags.length === 0) return 0;
   const tagWords = new Set(tags.flatMap(t => t.toLowerCase().split(/[-_\s]+/)));
   let hits = 0;
@@ -40,7 +40,7 @@ function scoreTagOverlap(keywords, tags) {
   return keywords.length > 0 ? hits / keywords.length : 0;
 }
 
-function scoreInsightMatch(keywords, insight) {
+export function scoreInsightMatch(keywords, insight) {
   if (!insight) return 0;
   const insightWords = new Set(insight.toLowerCase().split(/\W+/).filter(w => w.length > 1));
   let hits = 0;
@@ -50,7 +50,7 @@ function scoreInsightMatch(keywords, insight) {
   return keywords.length > 0 ? hits / keywords.length : 0;
 }
 
-function scoreRecency(timestamp) {
+export function scoreRecency(timestamp) {
   if (!timestamp) return 0;
   const age = Date.now() - new Date(timestamp).getTime();
   const daysOld = age / (1000 * 60 * 60 * 24);

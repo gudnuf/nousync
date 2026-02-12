@@ -5,7 +5,7 @@ import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { decode } from 'cbor-x';
 import { getEncodedToken } from 'coco-cashu-core';
-import { encodePaymentRequest, tokenAmount, createPaymentMiddleware } from '../packages/agent/payment.js';
+import { encodePaymentRequest, tokenAmount, createPaymentMiddleware } from '../packages/core/payment.js';
 import { createAgentServer } from '../packages/agent/server.js';
 
 // Valid 100 sat test token

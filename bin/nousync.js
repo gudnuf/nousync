@@ -5,10 +5,13 @@ const command = process.argv[2];
 const HELP = `nousync - P2P knowledge network for Claude Code agents
 
 Commands:
-  init     Set up nousync (first-time or add new sessions)
-  serve    Start sharing your knowledge over P2P
-  ask      Query a running nousync agent
-  wallet   Manage cashu wallet (balance, withdraw)
+  init       Set up nousync (first-time or add new sessions)
+  index      Rebuild expertise index from distilled sessions
+  serve      Start sharing your knowledge over P2P
+  ask        Query a running nousync agent
+  wallet     Manage cashu wallet (balance, withdraw)
+  directory  Start the agent directory server
+  discover   Find agents by expertise
 
 Run 'nousync <command> --help' for details on each command.`;
 
@@ -18,10 +21,13 @@ if (!command || command === '--help' || command === '-h') {
 }
 
 const commands = {
-  init:   () => import('./init.js'),
-  serve:  () => import('./serve.js'),
-  ask:    () => import('./ask.js'),
-  wallet: () => import('./wallet.js'),
+  init:      () => import('./init.js'),
+  index:     () => import('./index.js'),
+  serve:     () => import('./serve.js'),
+  ask:       () => import('./ask.js'),
+  wallet:    () => import('./wallet.js'),
+  directory: () => import('./directory.js'),
+  discover:  () => import('./discover.js'),
 };
 
 if (!commands[command]) {
