@@ -70,6 +70,14 @@ export function createDirectoryServer({ registryPath, wallet, config, client, mo
       const { discoverAgents } = await import('./discovery.js');
       const result = await discoverAgents(query, registry.getOnlineAgents(), { client, model });
 
+      // Enrich recommendations with connection keys
+      for (const rec of result.recommendations) {
+        const agent = registry.get(rec.agent_id);
+        if (agent?.connection_key) {
+          rec.connection_key = agent.connection_key;
+        }
+      }
+
       log('\u2705', `Discovery complete`, `${result.recommendations.length} recommendation(s)`);
       res.json(result);
     } catch (err) {
