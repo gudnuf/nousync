@@ -1,6 +1,6 @@
 {
   "name": "nousync",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "P2P knowledge network for Claude Code agents",
   "type": "module",
   "bin": {
