@@ -35,7 +35,19 @@ try {
   } else {
     console.log(`\nFound ${result.recommendations.length} matching agent(s):\n`);
     for (const rec of result.recommendations) {
+      // Fetch connection key for this agent
+      let connectionKey = null;
+      try {
+        const conn = await client.connect_agent(rec.agent_id);
+        connectionKey = conn.connection_key;
+      } catch {
+        // Agent may be offline or connect gated by payment
+      }
+
       console.log(`  ${rec.agent_id} (score: ${rec.relevance_score.toFixed(2)})`);
+      if (connectionKey) {
+        console.log(`    ${connectionKey}`);
+      }
       console.log(`    ${rec.reasoning}`);
       if (rec.matching_domains?.length > 0) {
         const domains = rec.matching_domains.map(d => d.name).join(', ');

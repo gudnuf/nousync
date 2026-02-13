@@ -73,6 +73,24 @@ export class DirectoryClient {
     return res.json();
   }
 
+  async connect_agent(agent_id) {
+    if (!this.connected) throw new Error('Not connected. Call connect() first.');
+
+    const res = await fetch(`${this.baseUrl}/connect`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ agent_id }),
+      signal: AbortSignal.timeout(this.timeout),
+    });
+
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({ error: res.statusText }));
+      throw new Error(`Connect failed (${res.status}): ${err.error}`);
+    }
+
+    return res.json();
+  }
+
   async disconnect() {
     if (this.holesail) {
       await this.holesail.close();
